@@ -2,9 +2,9 @@ import {NaryFraction, findCircularRepeatingSuffix} from './nary'
 
 
 describe('nary tests', () => {
+    const ternary = NaryFraction.factory(3)
 
     it('supports nontrivial equals', () => {
-        const ternary = NaryFraction.factory(3)
 
         const a1 = ternary([], [1, 0, 2])
         const a2 = ternary([1], [0, 2, 1])
@@ -17,8 +17,33 @@ describe('nary tests', () => {
         expect(a1.equals(a3)).toBe(true)
         expect(a1.equals(a4)).toBe(true)
         expect(a1.equals(a5)).toBe(true)
+
         expect(a1.equals(b)).toBe(false)
 
+    })
+
+    it('supports less-than', () => {
+        const a = ternary([1, 0, 2], [])
+        const b = ternary([], [1, 0, 2])
+
+        expect(a.lessThan(b)).toBe(true)
+        expect(b.lessThan(a)).toBe(false)
+
+        expect(a.lessThan(a)).toBe(false)
+        expect(b.lessThan(b)).toBe(false)
+    })
+
+    it('supports indexing', () => {
+        const a = ternary([1, 0, 2], [])
+        const b = ternary([1, 0], [1, 0, 2])
+
+        expect(a.digitAt(0)).toBe(1)
+        expect(a.digitAt(2)).toBe(2)
+        expect(a.digitAt(3)).toBe(0)
+
+        expect(b.digitAt(1)).toBe(0)
+        expect(b.digitAt(2)).toBe(1)
+        expect(b.digitAt(19)).toBe(2)
     })
 
     it('simplifies fractions', () => {

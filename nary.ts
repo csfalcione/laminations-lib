@@ -61,8 +61,34 @@ export class NaryFraction {
         if (this.base !== other.base) {
             return false
         }
+        const approxLen = frac => frac.exactPart.length + frac.repeatingPart.length
 
+        const upperBound = 2 * Math.max( approxLen(this), approxLen(other) )
+        for (let idx = 0; idx < upperBound; idx++) {
+            const thisDigit = this.digitAt(idx)
+            const otherDigit = other.digitAt(idx)
+            if (thisDigit === otherDigit) {
+                continue
+            }
+            return thisDigit < otherDigit
+        }
 
+        return false
+    }
+
+    public digitAt(idx: number): number {
+        const exactLen = this.exactPart.length
+        const repeatingLen = this.repeatingPart.length
+
+        if (idx < exactLen) {
+            return this.exactPart[idx]
+        }
+
+        if (repeatingLen === 0) {
+            return 0
+        }
+
+        return this.repeatingPart[(idx - exactLen) % repeatingLen]
     }
 
 }
