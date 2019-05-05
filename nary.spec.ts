@@ -1,7 +1,7 @@
-import {NaryFraction, findCircularRepeatingSuffix} from './nary'
+import {NaryFraction, findCircularRepeatingSuffix, reduceCircularSequence} from './nary'
 
 
-describe('nary tests', () => {
+describe('NaryFraction', () => {
     const ternary = NaryFraction.factory(3)
 
     it('supports nontrivial equals', () => {
@@ -50,15 +50,18 @@ describe('nary tests', () => {
         const f = NaryFraction.simplify
 
         expect( f([1], [0, 2, 1]) ).toEqual([ [], [1, 0, 2] ])
+        expect( f([], [3, 3, 3]) ).toEqual([ [], [3] ])
 
         expect( f(   [3, 1, 1, 0, 2, 1, 0, 2, 1], [0, 2, 1]) )
+          .toEqual([ [3, 1],                      [1, 0, 2]] )
+        expect( f(   [3, 1, 1, 0, 2, 1, 0, 2, 1], [0, 2, 1, 0, 2, 1]) )
           .toEqual([ [3, 1],                      [1, 0, 2]] )
     })
 
 
 })
 
-describe('findCircularRepeatingSuffix() tests', () => {
+describe('findCircularRepeatingSuffix()', () => {
     const f = findCircularRepeatingSuffix
 
     it('handles edge cases', () => {
@@ -73,5 +76,14 @@ describe('findCircularRepeatingSuffix() tests', () => {
         expect(f([3, 1, 1], [0, 2, 1])).toEqual(2)
         expect(f([3, 1, 1, 0, 2, 1], [0, 2, 1])).toEqual(2)
         expect(f([3, 1, 1, 0, 2, 1, 0, 2, 1], [0, 2, 1])).toEqual(2)
+    })
+})
+
+describe('reduceCircularSequence()', () => {
+    const f = reduceCircularSequence
+    it('works', () => {
+        expect(f([3, 3, 3])).toEqual([3])
+        expect(f([1, 2, 3])).toEqual([1, 2, 3])
+        expect(f([1, 2, 3, 1, 2, 3])).toEqual([1, 2, 3])
     })
 })

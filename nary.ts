@@ -41,6 +41,7 @@ export class NaryFraction {
     }
 
     public static simplify(exactPart: Array<number>, repeatingPart: Array<number>): [Array<number>, Array<number>] {
+        repeatingPart = reduceCircularSequence(repeatingPart)
         const repeatingSuffixStart = findCircularRepeatingSuffix(exactPart, repeatingPart)
         const newExactPart = exactPart.slice(0, repeatingSuffixStart)
 
@@ -91,6 +92,36 @@ export class NaryFraction {
         return this.repeatingPart[(idx - exactLen) % repeatingLen]
     }
 
+}
+
+
+/**
+ * Finds the shortest-length contiguous subsequence w of 'sequence' such that
+ * 'sequence' is some number of concatenations of w.
+ * Ex:
+ * [1, 1, 1] -> [1]
+ * [1, 2, 3, 1, 2, 3] -> [1, 2, 3]
+ * [1, 2, 3, 1, 2] -> [1, 2, 3, 1, 2]
+ */
+export const reduceCircularSequence = <T>(sequence: Array<T>): Array<T> => {
+    for (let width = 1; width <= sequence.length / 2; width++) {
+        if (sequence.length % width !== 0) {
+            continue
+        }
+        if (isCircularOfWidth(sequence, width)) {
+            return sequence.slice(0, width)
+        }
+    }
+
+    return sequence
+}
+
+const isCircularOfWidth = <T>(sequence: Array<T>, width: number): boolean => {
+    return range(0, width)
+        .every( startIdx => range(startIdx, sequence.length, width)
+                .map(idx => sequence[idx])
+                .every(val => val === sequence[startIdx])
+        )
 }
 
 /**
@@ -144,4 +175,14 @@ const arraysEqual = <T>(a: Array<T>, b: Array<T>): boolean => {
     }
 
     return true
+}
+
+const range = (start: number, end: number, step: number = 1): Array<number> => {
+    let result = []
+
+    for (let num = start; num < end; num += step) {
+        result.push(num)
+    }
+
+    return result
 }
