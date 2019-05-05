@@ -16,7 +16,12 @@ export class NaryFraction {
         exactPart: Array<number>,
         repeatingPart: Array<number>
     ) {
-        const [newExact, newRepeating] = NaryFraction.simplify(exactPart, repeatingPart)
+        let [newExact, newRepeating] = NaryFraction.simplify(exactPart, repeatingPart)
+
+        if (arraysEqual(newRepeating, [base - 1])) {
+            newRepeating = []
+            newExact = incrementDigitSequence(base, newExact)
+        }
 
         this.base = base
         this.exactPart = newExact
@@ -232,6 +237,24 @@ const valueFromDigits = (base: number, digits: Array<number>): number => {
     }
 
     return sum
+}
+
+const incrementDigitSequence = (base: number, digits: Array<number>): Array<number> => {
+    const copy = [...digits]
+    let carry = 1
+    let idx = digits.length - 1
+
+    while (idx >= 0 && carry !== 0) {
+        copy[idx]++
+        carry--
+        if (copy[idx] === base) {
+            copy[idx] = 0
+            carry++
+        }
+        idx--
+    }
+
+    return copy
 }
 
 const greatestCommonDivisor = (b: number, a: number): number => {
