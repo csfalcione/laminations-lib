@@ -92,6 +92,33 @@ export class NaryFraction {
         return this.repeatingPart[(idx - exactLen) % repeatingLen]
     }
 
+    public toNumber(): number {
+        return this.numerator() / this.denominator()
+    }
+
+    public toRational(): [number, number] {
+        return [this.numerator(), this.denominator()]
+    }
+
+
+    public numerator(): number {
+        const d = this.base
+        return this.repeatingDenominator() * valueFromDigits(d, this.exactPart)
+            + valueFromDigits(d, this.repeatingPart)
+    }
+
+    public denominator(): number {
+        return this.repeatingDenominator() * Math.pow(this.base, this.exactPart.length)
+    }
+
+    private repeatingDenominator(): number {
+        const result = Math.pow(this.base, this.repeatingPart.length) - 1
+        if (result === 0) {
+            return 1
+        }
+        return result
+    }
+
 }
 
 
@@ -178,11 +205,23 @@ const arraysEqual = <T>(a: Array<T>, b: Array<T>): boolean => {
 }
 
 const range = (start: number, end: number, step: number = 1): Array<number> => {
-    let result = []
+    const result = []
 
     for (let num = start; num < end; num += step) {
         result.push(num)
     }
 
     return result
+}
+
+
+const valueFromDigits = (base: number, digits: Array<number>): number => {
+    let sum = 0
+    let place = 1
+    for (let idx = digits.length - 1; idx >= 0; idx--) {
+        sum += digits[idx] * place
+        place *= base
+    }
+
+    return sum
 }

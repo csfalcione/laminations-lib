@@ -2,7 +2,9 @@ import {NaryFraction, findCircularRepeatingSuffix, reduceCircularSequence} from 
 
 
 describe('NaryFraction', () => {
+    const binary = NaryFraction.factory(2)
     const ternary = NaryFraction.factory(3)
+    const quaternary = NaryFraction.factory(4)
 
     it('supports nontrivial equals', () => {
 
@@ -56,6 +58,17 @@ describe('NaryFraction', () => {
           .toEqual([ [3, 1],                      [1, 0, 2]] )
         expect( f(   [3, 1, 1, 0, 2, 1, 0, 2, 1], [0, 2, 1, 0, 2, 1]) )
           .toEqual([ [3, 1],                      [1, 0, 2]] )
+    })
+
+    it('converts to rational numbers', () => {
+        expect( ternary([1], []).toRational() )
+          .toEqual([1, 3])
+
+        expect( binary([1], [1, 0, 1]).toRational())
+          .toEqual([6, 7])
+
+        expect( quaternary([3, 1], [1, 0, 2]).toRational() )
+          .toEqual([837, 1008])
     })
 
 
