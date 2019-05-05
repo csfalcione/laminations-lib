@@ -53,14 +53,19 @@ export class NaryFraction {
 
 
     public equals(other: NaryFraction): boolean {
-        return this.base === other.base
-            && arraysEqual(this.exactPart, other.exactPart)
+        if (this.base !== other.base) {
+            const [thisNum, thisDenom] = this.toRational()
+            const [otherNum, otherDenom] = other.toRational()
+            return thisNum === otherNum && thisDenom === otherDenom
+        }
+
+        return arraysEqual(this.exactPart, other.exactPart)
             && arraysEqual(this.repeatingPart, other.repeatingPart)
     }
 
     public lessThan(other: NaryFraction): boolean {
         if (this.base !== other.base) {
-            return false
+            return this.equals(other) === false && this.toNumber() < other.toNumber()
         }
         const approxLen = frac => frac.exactPart.length + frac.repeatingPart.length
 
@@ -97,7 +102,10 @@ export class NaryFraction {
     }
 
     public toRational(): [number, number] {
-        return [this.numerator(), this.denominator()]
+        const num = this.numerator()
+        const denom = this.denominator()
+        const gcd = greatestCommonDivisor(num, denom)
+        return [Math.round(num / gcd), Math.round(denom / gcd)]
     }
 
 
@@ -224,4 +232,12 @@ const valueFromDigits = (base: number, digits: Array<number>): number => {
     }
 
     return sum
+}
+
+const greatestCommonDivisor = (b: number, a: number): number => {
+    if (a === 0) {
+        return b
+    }
+
+    return greatestCommonDivisor(a, b % a)
 }

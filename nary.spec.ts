@@ -5,6 +5,7 @@ describe('NaryFraction', () => {
     const binary = NaryFraction.factory(2)
     const ternary = NaryFraction.factory(3)
     const quaternary = NaryFraction.factory(4)
+    const decimal = NaryFraction.factory(10)
 
     it('supports nontrivial equals', () => {
 
@@ -15,12 +16,17 @@ describe('NaryFraction', () => {
         const a5 = ternary([1, 0, 2, 1], [0, 2, 1])
         const b  = ternary([2], [1])
 
+        const c1 = ternary([1], [])
+        const c2 = decimal([], [3])
+
         expect(a1.equals(a2)).toBe(true)
         expect(a1.equals(a3)).toBe(true)
         expect(a1.equals(a4)).toBe(true)
         expect(a1.equals(a5)).toBe(true)
 
         expect(a1.equals(b)).toBe(false)
+
+        expect(c1.equals(c2)).toBe(true)
 
     })
 
@@ -64,11 +70,14 @@ describe('NaryFraction', () => {
         expect( ternary([1], []).toRational() )
           .toEqual([1, 3])
 
+        expect( decimal([], [3]).toRational() )
+          .toEqual([1, 3])
+
         expect( binary([1], [1, 0, 1]).toRational())
           .toEqual([6, 7])
 
         expect( quaternary([3, 1], [1, 0, 2]).toRational() )
-          .toEqual([837, 1008])
+          .toEqual([93, 112])
     })
 
 
