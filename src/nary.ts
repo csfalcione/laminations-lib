@@ -23,6 +23,10 @@ export class NaryFraction {
             newExact = incrementDigitSequence(base, newExact)
         }
 
+        if (arraysEqual(newRepeating, [0])) {
+            newRepeating = []
+        }
+
         if (arraysEqual(newRepeating, [])) {
             newExact = removeTrailingZeroes(newExact)
         }
