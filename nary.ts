@@ -23,6 +23,10 @@ export class NaryFraction {
             newExact = incrementDigitSequence(base, newExact)
         }
 
+        if (arraysEqual(newRepeating, [])) {
+            newExact = removeTrailingZeroes(newExact)
+        }
+
         this.base = base
         this.exactPart = newExact
         this.repeatingPart = newRepeating
@@ -255,6 +259,16 @@ const incrementDigitSequence = (base: number, digits: Array<number>): Array<numb
     }
 
     return copy
+}
+
+const removeTrailingZeroes = (array: Array<number>): Array<number> => {
+    let idx = array.length - 1
+
+    while (idx >= 0 && array[idx] === 0) {
+        idx--
+    }
+
+    return array.slice(0, idx + 1)
 }
 
 const greatestCommonDivisor = (b: number, a: number): number => {

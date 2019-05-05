@@ -28,6 +28,9 @@ describe('NaryFraction', () => {
         const e2 = decimal([3], [9])
         const e3 = decimal([3, 9], [9])
 
+        const f1 = ternary([1, 0, 0], [])
+        const f2 = ternary([1], [])
+
         expect(a1.equals(a2)).toBe(true)
         expect(a1.equals(a3)).toBe(true)
         expect(a1.equals(a4)).toBe(true)
@@ -40,9 +43,12 @@ describe('NaryFraction', () => {
         expect(d1.equals(d2)).toBe(true)
         expect(d1.equals(d3)).toBe(true)
         expect(d1.equals(d4)).toBe(true)
+        expect(d2.equals(d4)).toBe(true)
 
         expect(e1.equals(e2)).toBe(true)
         expect(e1.equals(e3)).toBe(true)
+
+        expect(f1.equals(f2)).toBe(true)
 
     })
 
