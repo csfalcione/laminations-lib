@@ -64,6 +64,18 @@ export class NaryFraction {
         return [newExactPart, newRepeatingPart]
     }
 
+    public static compare(a: NaryFraction, b: NaryFraction): number {
+        if (a.equals(b)){
+            return 0
+        }
+
+        if (a.lessThan(b)){
+            return -1
+        }
+
+        return 1
+    }
+
 
     public equals(other: NaryFraction): boolean {
         if (this.base !== other.base) {
@@ -93,6 +105,10 @@ export class NaryFraction {
         }
 
         return false
+    }
+
+    public greaterThan(other: NaryFraction) {
+        return NaryFraction.compare(this, other) === 1
     }
 
     public digitAt(idx: number): number {
