@@ -76,6 +76,34 @@ export class NaryFraction {
         return 1
     }
 
+    public static equals(a: NaryFraction, b: NaryFraction): boolean {
+        return a.equals(b)
+    }
+
+    public static lessThan(a: NaryFraction, b: NaryFraction): boolean {
+        return a.lessThan(b)
+    }
+
+    public static greaterThan(a: NaryFraction, b: NaryFraction): boolean {
+        return a.greaterThan(b)
+    }
+
+    public static mapForward(fraction: NaryFraction): NaryFraction {
+        return fraction.mapForward();
+    }
+    
+    public static mapBackward(fraction: NaryFraction): Array<NaryFraction> {
+        return fraction.mapBackward();
+    }
+
+    public static toNumber(fraction: NaryFraction): number {
+        return fraction.toNumber()
+    }
+
+    public static toRational(fraction: NaryFraction): [number, number] {
+        return fraction.toRational()
+    }
+
 
     public equals(other: NaryFraction): boolean {
         if (this.base !== other.base) {
