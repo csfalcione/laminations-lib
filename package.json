@@ -1,14 +1,32 @@
 {
-    "name": "laminations-lib",
-    "version": "0.1.0",
-    "scripts": {
-        "build": "tsc",
-        "test": "jest"
-    },
-    "devDependencies": {
-        "@types/jest": "^24.0.12",
-        "jest": "^24.8.0",
-        "ts-jest": "^24.0.2",
-        "typescript": "^3.4.5"
-    }
+  "name": "laminations-lib",
+  "version": "0.1.0",
+  "scripts": {
+    "build": "tsc",
+    "test": "jest"
+  },
+  "devDependencies": {
+    "@types/jest": "^24.0.12",
+    "jest": "^24.8.0",
+    "ts-jest": "^24.0.2",
+    "typescript": "^3.4.5"
+  },
+  "description": "A collection of libraries for manipulating mathematical laminations.",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "dependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/csfalcione/laminations-lib.git"
+  },
+  "keywords": [
+    "laminations",
+    "math"
+  ],
+  "author": "Caleb Falcione <caleb.falcione@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/csfalcione/laminations-lib/issues"
+  },
+  "homepage": "https://github.com/csfalcione/laminations-lib#readme"
 }
