@@ -14,6 +14,7 @@
   "description": "A collection of libraries for manipulating mathematical laminations.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "readme": "README.md",
   "dependencies": {},
   "repository": {
     "type": "git",
