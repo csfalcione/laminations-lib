@@ -41,9 +41,9 @@ export class NaryFraction {
     public repeatingPart: Array<number>
 
     public static new(
-            base: number,
-            exactPart: Array<number>,
-            repeatingPart: Array<number>): NaryFraction {
+        base: number,
+        exactPart: Array<number>,
+        repeatingPart: Array<number>): NaryFraction {
         return new NaryFraction(base, exactPart, repeatingPart)
     }
 
@@ -65,11 +65,11 @@ export class NaryFraction {
     }
 
     public static compare(a: NaryFraction, b: NaryFraction): number {
-        if (a.equals(b)){
+        if (a.equals(b)) {
             return 0
         }
 
-        if (a.lessThan(b)){
+        if (a.lessThan(b)) {
             return -1
         }
 
@@ -94,7 +94,7 @@ export class NaryFraction {
         }
         const approxLen = frac => frac.exactPart.length + frac.repeatingPart.length
 
-        const upperBound = 2 * Math.max( approxLen(this), approxLen(other) )
+        const upperBound = 2 * Math.max(approxLen(this), approxLen(other))
         for (let idx = 0; idx < upperBound; idx++) {
             const thisDigit = this.digitAt(idx)
             const otherDigit = other.digitAt(idx)
@@ -124,6 +124,29 @@ export class NaryFraction {
         }
 
         return this.repeatingPart[(idx - exactLen) % repeatingLen]
+    }
+
+    public mapForward(): NaryFraction {
+        return NaryFraction.new(
+            this.base,
+            this.exactPart.slice(1),
+            rotateLeft(this.repeatingPart, this.exactPart.length > 0 ? 0 : 1)
+        )
+    }
+
+    public mapBackward(): Array<NaryFraction> {
+        const base = this.base
+        const exact = this.exactPart
+        let result = new Array(base)
+
+        for (let i = 0; i < base; i++) {
+            result[i] = NaryFraction.new(
+                base,
+                [i, ...exact],
+                [...this.repeatingPart]
+            )
+        }
+        return result
     }
 
     public toNumber(): number {
@@ -159,6 +182,8 @@ export class NaryFraction {
 }
 
 
+const mod = (a: number, b: number): number => ((a % b) + b) % b
+
 /**
  * Finds the shortest-length contiguous subsequence w of 'sequence' such that
  * 'sequence' is some number of concatenations of w.
@@ -182,9 +207,9 @@ export const reduceCircularSequence = <T>(sequence: Array<T>): Array<T> => {
 
 const isCircularOfWidth = <T>(sequence: Array<T>, width: number): boolean => {
     return range(0, width)
-        .every( startIdx => range(startIdx, sequence.length, width)
-                .map(idx => sequence[idx])
-                .every(val => val === sequence[startIdx])
+        .every(startIdx => range(startIdx, sequence.length, width)
+            .map(idx => sequence[idx])
+            .every(val => val === sequence[startIdx])
         )
 }
 
@@ -221,10 +246,14 @@ const rotateRight = <T>(array: Array<T>, offset: number): Array<T> => {
     const result = new Array<T>(len)
 
     for (let i = 0; i < len; i++) {
-        result[ (i + offset) % len ] = array[i]
+        result[mod(i + offset, len)] = array[i]
     }
 
     return result
+}
+
+const rotateLeft = <T>(array: Array<T>, offset: number): Array<T> => {
+    return rotateRight(array, -1 * offset)
 }
 
 const arraysEqual = <T>(a: Array<T>, b: Array<T>): boolean => {
@@ -296,5 +325,5 @@ const greatestCommonDivisor = (b: number, a: number): number => {
         return b
     }
 
-    return greatestCommonDivisor(a, b % a)
+    return greatestCommonDivisor(a, mod(b, a))
 }

@@ -32,6 +32,9 @@ describe('NaryFraction', () => {
         const f2 = ternary([1], [])
         const f3 = ternary([1, 0, 0], [0, 0])
 
+        const g1 = ternary([2], [])
+        const g2 = binary([], [1, 0])
+
         expect(a1.equals(a2)).toBe(true)
         expect(a1.equals(a3)).toBe(true)
         expect(a1.equals(a4)).toBe(true)
@@ -51,6 +54,8 @@ describe('NaryFraction', () => {
 
         expect(f1.equals(f2)).toBe(true)
         expect(f1.equals(f3)).toBe(true)
+
+        expect(g1.equals(g2)).toBe(true)
 
     })
 
@@ -105,6 +110,43 @@ describe('NaryFraction', () => {
         
         expect( ternary([], []).toRational() )
           .toEqual([0, 1])
+
+        expect( ternary([2], []).toRational() )
+          .toEqual([2, 3])
+
+        expect( binary([], [1, 0]).toRational() )
+          .toEqual([2, 3])
+    })
+
+    it('supports a forward map', () => {
+      expect(
+        ternary([], [])
+        .mapForward()
+      ).toEqual(ternary([], []));
+
+      expect(
+        ternary([], [0, 1, 2])
+        .mapForward()
+      ).toEqual(ternary([], [1, 2, 0]));
+
+      expect(
+        ternary([1], [1, 2])
+        .mapForward()
+      ).toEqual(ternary([], [1, 2]));
+
+      expect(
+        ternary([1, 2], []).mapForward()
+        .equals(binary([], [0, 1]).mapForward())
+      ).toBe(true)
+    })
+
+    it('supports a backwards map', () => {
+      expect(ternary([], [0, 1]).mapBackward())
+      .toEqual([
+        ternary([0], [0, 1]),
+        ternary([1], [0, 1]),
+        ternary([2], [0, 1])
+      ])
     })
 
 
