@@ -19,7 +19,7 @@ export const makeRegion = (identifierFunc: (NaryFraction) => boolean): BranchReg
 }
 
 
-function *iterates(leaves: Array<Polygon>, branches: Array<BranchRegion>): Iterator<Array<Polygon>> {
+function *iterates(leaves: Array<Polygon>, branches: Array<BranchRegion>): IterableIterator<Array<Polygon>> {
   let newLeaves = leaves
   while (true) {
     yield newLeaves
