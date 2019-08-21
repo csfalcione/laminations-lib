@@ -45,4 +45,4 @@ const pullback = (leaves: Array<Polygon>, branches: Array<BranchRegion>): Array<
   return result
 }
 
-export const PullbackLamination = {iterates}
+export const PullbackLamination = {iterates, pullback}
