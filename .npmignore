@@ -1,2 +1,7 @@
 lib/
 src/
+
+ts*.json
+
+.vscode/
+jest*
