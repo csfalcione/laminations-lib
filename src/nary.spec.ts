@@ -6,6 +6,7 @@ describe('NaryFraction', () => {
     const ternary = NaryFraction.factory(3)
     const quaternary = NaryFraction.factory(4)
     const decimal = NaryFraction.factory(10)
+    const dozenal = NaryFraction.factory(12)
 
     it('supports nontrivial equals', () => {
 
@@ -149,6 +150,20 @@ describe('NaryFraction', () => {
       ])
     })
 
+    it('supports parsing string input', () => {
+      const parseTernary = NaryFraction.parseFactory(3)
+      const parseDozenal = NaryFraction.parseFactory(12)
+
+      expect(parseTernary('100').equals(ternary([1, 0, 0], [])))
+      expect(parseTernary('100_').equals(ternary([1, 0, 0], [])))
+      expect(parseTernary('_100').equals(ternary([], [1, 0, 0])))
+      expect(parseTernary('1_100').equals(ternary([1], [1, 0, 0])))
+      
+      expect(parseDozenal('11,9,2').equals(dozenal([12, 9, 2], [])))
+      expect(parseDozenal('11,9,2_').equals(dozenal([12, 9, 2], [])))
+      expect(parseDozenal('_11,9,2').equals(dozenal([], [11, 9, 2])))
+      expect(parseDozenal('11_11,9,2').equals(dozenal([11], [11, 9, 2])))
+    })
 
 })
 

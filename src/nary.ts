@@ -53,6 +53,24 @@ export class NaryFraction {
         }
     }
 
+    public static parse(base: number, text: string): NaryFraction {
+        let [exactText, repeatingText] = text.split('_')
+        if (repeatingText == null) {
+            repeatingText = ''
+        }
+
+        const digitSplitter = base < 10 ? '' : ','
+
+        const exactPart = exactText.split(digitSplitter).map(parseInt)
+        const repeatingPart = repeatingText.split(digitSplitter).map(parseInt)
+
+        return new NaryFraction(base, exactPart, repeatingPart)
+    }
+
+    public static parseFactory(base: number) {
+        return (text: string): NaryFraction => NaryFraction.parse(base, text)
+    }
+
     public static simplify(exactPart: Array<number>, repeatingPart: Array<number>): [Array<number>, Array<number>] {
         repeatingPart = reduceCircularSequence(repeatingPart)
         const repeatingSuffixStart = findCircularRepeatingSuffix(exactPart, repeatingPart)
