@@ -40,7 +40,7 @@ export class Polygon {
     }
 
     if (points.length > 2) {
-      result.push(points[0], points[lastIdx])
+      result.push(Chord.new(points[0], points[lastIdx]))
     }
 
     return result;
