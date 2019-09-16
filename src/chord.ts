@@ -40,12 +40,23 @@ export class Chord {
     return !(this.inInnerRegion(point) || this.onBoundary(point))
   }
 
+  public contains(point:NaryFraction) {
+    if (this.width() > 0.5) {
+      return this.inOuterRegion(point)
+    }
+    return this.inInnerRegion(point)
+  }
+
   public onBoundary(point: NaryFraction): boolean {
     return this.lower.equals(point) || this.upper.equals(point)
   }
 
   public mapForward(): Chord {
     return Chord.new(this.lower.mapForward(), this.upper.mapForward())
+  }
+
+  public width(): number {
+    return this.upper.toNumber() - this.lower.toNumber()
   }
 
 
