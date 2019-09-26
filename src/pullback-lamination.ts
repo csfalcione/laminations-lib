@@ -1,23 +1,10 @@
 import { NaryFraction } from "./nary";
 import { Polygon } from './polygon';
+import { BranchRegion } from './branch-region';
 
-
-export interface BranchRegion {
-    isInBranch: (NaryFraction) => boolean,
-    getContainedPullback: (NaryFraction) => Array<NaryFraction>,
+const getContainedPullback = (branch: BranchRegion) => (number: NaryFraction): Array<NaryFraction> => {
+  return number.mapBackward().filter(branch.unwrap());
 }
-
-export const makeRegion = (identifierFunc: (NaryFraction) => boolean): BranchRegion => {
-    const getContainedPullback = (number: NaryFraction): Array<NaryFraction> => {
-        return number.mapBackward().filter(identifierFunc);
-    }
-
-    return {
-        isInBranch: identifierFunc,
-        getContainedPullback
-    }
-}
-
 
 function *iterates(leaves: Array<Polygon>, branches: Array<BranchRegion>): IterableIterator<Array<Polygon>> {
   let newLeaves = leaves
@@ -34,7 +21,7 @@ const pullback = (leaves: Array<Polygon>, branches: Array<BranchRegion>): Array<
     for (const branch of branches) {
       const nextPolygon = Polygon.new(
         leaf.points
-        .map(branch.getContainedPullback)
+        .map(getContainedPullback(branch))
         .filter(points => points.length > 0)
         .map(points => points[0])
       )

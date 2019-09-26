@@ -1,7 +1,8 @@
 import { NaryFraction } from "./nary";
 import { Chord } from './chord';
 import { Polygon } from './polygon';
-import { PullbackLamination, BranchRegion, makeRegion } from './pullback-lamination';
+import { PullbackLamination } from './pullback-lamination';
+import { BranchRegion, not, or } from './branch-region';
 
 const binary = NaryFraction.factory(2)
 const ternary = NaryFraction.factory(3)
@@ -19,13 +20,14 @@ describe('PullbackLamination', () => {
       binary([1], [0, 1, 0]) // 9/14
     )
     
-    const firstRegion = (point: NaryFraction) => criticalChord.inInnerRegion(point) || point.equals(criticalChord.lower)
-    const secondRegion = (point: NaryFraction) => !firstRegion(point)
+    
+    const firstRegion = BranchRegion.simple(criticalChord, criticalChord.lower)
+    const secondRegion = firstRegion.complement()
 
     const branches: Array<BranchRegion> = [
       firstRegion,
       secondRegion,
-    ].map(makeRegion)
+    ]
 
     const startingTriangle = Polygon.new([
       binary([], [0, 0, 1]), // 1/7
@@ -66,15 +68,15 @@ describe('PullbackLamination', () => {
       ternary([], [1, 2]) // 5/8
     )
 
-    const firstRegion = (point: NaryFraction) => criticalA.inOuterRegion(point) || point.equals(criticalA.lower)
-    const secondRegion = (point: NaryFraction) => criticalB.inInnerRegion(point) || point.equals(criticalB.upper)
-    const thirdRegion = (point: NaryFraction) => !(firstRegion(point) || secondRegion(point))
+    const firstRegion = BranchRegion.simple(criticalA, criticalA.lower)
+    const secondRegion = BranchRegion.simple(criticalB, criticalB.upper)
+    const thirdRegion = BranchRegion.complement(firstRegion, secondRegion)
 
     const branches: Array<BranchRegion> = [
       firstRegion,
       secondRegion,
       thirdRegion
-    ].map(makeRegion)
+    ]
 
     const firstLeaves = [
       Chord.new(

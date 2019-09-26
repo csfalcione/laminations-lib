@@ -17,6 +17,10 @@ export class BranchRegion {
     return unit(or(chord(c), ...points.map(point)))
   }
 
+  public static complement(...branches: BranchRegion[]): BranchRegion {
+    return unit(none(...branches.map(b => b.unwrap())))
+  }
+
   public contains(point: NaryFraction): boolean {
     return this.identifier(point)
   }
@@ -32,6 +36,10 @@ export class BranchRegion {
 
   public without(branch: BranchRegion): BranchRegion {
     return this.map(b => and(b, not(branch.unwrap())))
+  }
+
+  public complement(): BranchRegion {
+    return this.map(not)
   }
 
 }
