@@ -20,7 +20,7 @@ describe('BranchRegion', () => {
   const chordC = Chord.new(pointD, pointE)
   const chordD = Chord.new(pointG, pointH)
 
-  test('supports simple branch regions', () => {
+  it('supports simple branch regions', () => {
     const branchB = BranchRegion.new(
       or(
         chord(chordB),
@@ -35,7 +35,7 @@ describe('BranchRegion', () => {
     
   })
 
-  test('defines nested regions', () => {
+  it('defines nested regions', () => {
     const childBranch = BranchRegion.simple(chordD, pointH)
 
     const parentBranch = BranchRegion.simple(chordA, pointA)

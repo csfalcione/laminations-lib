@@ -14,7 +14,7 @@ const displayPolygon = (poly) => {
 }
 
 describe('PullbackLamination', () => {
-  test('binary rabbit lamination', () => {
+  it('binary rabbit lamination', () => {
     const criticalChord = Chord.new(
       binary([], [0, 0, 1]), // 1/7
       binary([1], [0, 1, 0]) // 9/14
@@ -58,7 +58,7 @@ describe('PullbackLamination', () => {
 
   })
 
-  test('ternary symmetric lamination', () => {
+  it('ternary symmetric lamination', () => {
     const criticalA = Chord.new(
       ternary([], [0, 1]), // 1/8
       ternary([2], [1, 0]) // 19/24
