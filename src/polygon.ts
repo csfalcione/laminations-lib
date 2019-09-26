@@ -46,5 +46,8 @@ export class Polygon {
     return result;
   }
 
+  public toString() {
+    return this.points.map(point => point.toString()).join(', ')
+  }
 
 }

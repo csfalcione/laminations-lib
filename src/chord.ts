@@ -59,5 +59,8 @@ export class Chord {
     return this.upper.toNumber() - this.lower.toNumber()
   }
 
+  public toString() {
+    return `${this.lower}, ${this.upper}`
+  }
 
 }

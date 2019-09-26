@@ -8,6 +8,11 @@ describe('NaryFraction', () => {
     const decimal = NaryFraction.factory(10)
     const dozenal = NaryFraction.factory(12)
 
+    it('support string interpolation', () => {
+      const num = NaryFraction.parse(3, '_102')
+      expect(`${num}`).toBe('_102')
+    })
+
     it('supports nontrivial equals', () => {
 
         const a1 = ternary([], [1, 0, 2])

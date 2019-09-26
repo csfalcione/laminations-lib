@@ -217,6 +217,11 @@ export class NaryFraction {
         return this.repeatingDenominator() * Math.pow(this.base, this.exactPart.length)
     }
 
+    public toString() {
+        const joiner = this.base < 10 ? '' : ','
+        return `${this.exactPart.join(joiner)}_${this.repeatingPart.join(joiner)}`
+    }
+
     private repeatingDenominator(): number {
         const result = Math.pow(this.base, this.repeatingPart.length) - 1
         if (result === 0) {
