@@ -25,6 +25,10 @@ export class BranchRegion {
     return this.identifier(point)
   }
 
+  public containsChord(chord: Chord): boolean {
+    return this.contains(chord.lower) && this.contains(chord.upper)
+  }
+
   public unwrap(): Identifier {
     return this.identifier
   }
@@ -34,8 +38,8 @@ export class BranchRegion {
     return unit(func(this.identifier))
   }
 
-  public without(branch: BranchRegion): BranchRegion {
-    return this.map(b => and(b, not(branch.unwrap())))
+  public without(...branches: BranchRegion[]): BranchRegion {
+    return this.map(b => and(b, BranchRegion.complement(...branches).unwrap()))
   }
 
   public complement(): BranchRegion {
