@@ -48,32 +48,42 @@ export class BranchRegion {
 
 }
 
-export const unit = BranchRegion.new
+const unit = BranchRegion.new
 
-export const or = (...identifiers: Identifier[]): Identifier => {
+const or = (...identifiers: Identifier[]): Identifier => {
   return (point: NaryFraction) => identifiers.some(
     identifier => identifier(point)
   )
 }
 
-export const and = (...identifiers: Identifier[]): Identifier => {
+const and = (...identifiers: Identifier[]): Identifier => {
   return (point: NaryFraction) => identifiers.every(
     identifier => identifier(point)
   )
 }
 
-export const not = (identifier: Identifier): Identifier => {
+const not = (identifier: Identifier): Identifier => {
   return (point: NaryFraction) => !identifier(point)
 }
 
-export const none = (...identifiers: Identifier[]): Identifier => {
+const none = (...identifiers: Identifier[]): Identifier => {
   return not(or(...identifiers))
 }
 
-export const point = (p: NaryFraction): Identifier => {
+const point = (p: NaryFraction): Identifier => {
   return (candidate: NaryFraction) => p.equals(candidate)
 }
 
-export const chord = (c: Chord): Identifier => {
+const chord = (c: Chord): Identifier => {
   return (point: NaryFraction) => c.contains(point)
+}
+
+export const operators = {
+  unit,
+  or,
+  and,
+  not,
+  none,
+  point,
+  chord,
 }

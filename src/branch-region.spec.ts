@@ -1,6 +1,8 @@
 import { NaryFraction } from "./nary"
 import { Chord } from './chord'
-import { BranchRegion, chord, point, or, and, none, not } from './branch-region'
+import { BranchRegion, operators } from './branch-region'
+
+const {chord, point, or} = operators
 
 
 describe('BranchRegion', () => {

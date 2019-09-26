@@ -2,7 +2,7 @@ import { NaryFraction } from "./nary";
 import { Chord } from './chord';
 import { Polygon } from './polygon';
 import { PullbackLamination } from './pullback-lamination';
-import { BranchRegion, not, or } from './branch-region';
+import { BranchRegion } from './branch-region';
 
 const binary = NaryFraction.factory(2)
 const ternary = NaryFraction.factory(3)

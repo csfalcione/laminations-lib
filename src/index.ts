@@ -1,4 +1,6 @@
 export {NaryFraction} from './nary'
 export {Chord} from './chord'
 export {Polygon} from './polygon'
-export {PullbackLamination, BranchRegion, makeRegion} from './pullback-lamination'
+export {PullbackLamination} from './pullback-lamination'
+export {BranchRegion, operators} from './branch-region'
+export {BranchSpec, makeBranchSpec, buildBranches, maybeAddFinalBranch, makeBuilder} from './branch-builder'
