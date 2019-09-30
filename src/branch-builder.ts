@@ -11,15 +11,19 @@ export const makeBranchSpec = (chord: Chord, ...endpoints: NaryFraction[]) => ({
 
 class TreeNode {
   public region: BranchRegion
-  public children: TreeNode[]
+  public children: Set<TreeNode>
 
   constructor(protected branchSpec: BranchSpec) {
     this.region = BranchRegion.simple(branchSpec.chord, ...branchSpec.endpoints)
-    this.children = []
+    this.children = new Set()
   }
 
   public static new(branchSpec: BranchSpec) {
     return new TreeNode(branchSpec)
+  }
+
+  public getChildren(): TreeNode[] {
+    return [...this.children.values()]
   }
 
   public addChild(node: TreeNode) {
@@ -27,8 +31,13 @@ class TreeNode {
       if (child.contains(node)) {
         return child.addChild(node)
       }
+      if (node.contains(child)) {
+        this.children.delete(child)
+        node.addChild(child)
+        this.children.add(node)
+      }
     }
-    this.children.push(node)
+    this.children.add(node)
   }
 
   public contains(other: TreeNode) {
@@ -44,22 +53,29 @@ class TreeNode {
 }
 
 export const buildBranches = (specs: BranchSpec[]): BranchRegion[] => {
-  const rootNodes = specs.map(TreeNode.new)
-  .reduce((nodes: TreeNode[], newNode: TreeNode) => {
-    for (let node of nodes) {
+  const forestSet = specs.map(TreeNode.new)
+  .reduce((nodes: Set<TreeNode>, newNode: TreeNode) => {
+    for (let node of nodes.values()) {
       if (node.contains(newNode)) {
         node.addChild(newNode)
         return nodes
       }
+      if (newNode.contains(node)) {
+        nodes.delete(node)
+        newNode.addChild(node)
+        nodes.add(newNode)
+      }
     }
+    nodes.add(newNode)
 
-    return [...nodes, newNode]
-  }, [])
+    return nodes
+  }, new Set())
 
+  const rootNodes = [...forestSet.values()]
   return rootNodes.map((root: TreeNode): BranchRegion[] => {
     const result = []
     for (let node of root.postOrder()) {
-      const region = node.region.without(...node.children.map(n => n.region))
+      const region = node.region.without(...node.getChildren().map(n => n.region))
       result.push(region)
     }
     return result

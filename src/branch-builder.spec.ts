@@ -10,7 +10,7 @@ const takeIterations = (firstLeaves: Polygon[], branches: BranchRegion[], n: num
     const pullbackGenerator = PullbackLamination.iterates(firstLeaves, branches)
     for (let i = 0; i < n; i++) {
         const leaves = pullbackGenerator.next().value
-        laminations.push(leaves.map(leaf => `${leaf}`))
+        laminations.push(leaves.map(leaf => `${leaf}`).sort())
     }
     return laminations
 }
@@ -58,11 +58,11 @@ describe('branch-builder', () => {
             ],
             [
                 '0_01, 2_21',
-                '_10, _12',
-                '0_21, 2_01',
-                '_01, _21',
-                '1_10, 1_12',
                 '0_12, 2_10',
+                '0_21, 2_01',
+                '1_10, 1_12',
+                '_01, _21',
+                '_10, _12',
             ]
         ])
     })
@@ -101,10 +101,10 @@ describe('branch-builder', () => {
         ]
 
         const specs = [
-            makeBranchSpec(criticalA, pointA),
             makeBranchSpec(criticalB, pointC),
             makeBranchSpec(criticalC, pointE),
             makeBranchSpec(criticalD, pointH),
+            makeBranchSpec(criticalA, pointA),
         ]
 
         const branches = maybeAddFinalBranch(5, buildBranches(specs))
@@ -113,25 +113,25 @@ describe('branch-builder', () => {
 
         expect(laminations).toEqual([
             [
-                '_033, _200, _300',
-                '_020, _030, _303',
                 '_002, _003, _330',
+                '_020, _030, _303',
+                '_033, _200, _300',
             ],
             [
-                '4_033, 4_200, 4_300',
-                '0_033, 3_200, 3_300',
-                '1_033, 1_200, 1_300',
-                '2_033, 2_200, 2_300',
-                '_020, _030, _303',
-                '4_020, 4_030, 4_303',
-                '_002, _003, _330',
-                '1_020, 1_030, 1_303',
-                '2_020, 2_030, 2_303',
-                '0_303, 3_020, 3_030',
-                '3_330, 4_002, 4_003',
                 '0_002, 0_003, 4_330',
+                '0_033, 3_200, 3_300',
+                '0_303, 3_020, 3_030',
                 '1_002, 1_003, 1_330',
+                '1_020, 1_030, 1_303',
+                '1_033, 1_200, 1_300',
                 '2_003, 2_330, 3_002',
+                '2_020, 2_030, 2_303',
+                '2_033, 2_200, 2_300',
+                '3_330, 4_002, 4_003',
+                '4_020, 4_030, 4_303',
+                '4_033, 4_200, 4_300',
+                '_002, _003, _330',
+                '_020, _030, _303',
                 '_033, _200, _300',
             ]
         ])
