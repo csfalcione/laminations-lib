@@ -49,9 +49,9 @@ describe('branch-builder', () => {
             )
         ].map(Polygon.fromChord)
 
-        const laminations = takeIterations(firstLeaves, branches, 2)
+        const lamination = takeIterations(firstLeaves, branches, 2)
 
-        expect(laminations).toEqual([
+        expect(lamination).toEqual([
             [
                 '_01, _21',
                 '_10, _12',
@@ -63,6 +63,40 @@ describe('branch-builder', () => {
                 '1_10, 1_12',
                 '_01, _21',
                 '_10, _12',
+            ]
+        ])
+    })
+
+    it('doesnt break for polygons with an all-critical triangle', () => {
+        const pointA = ternary('_001')
+        const pointB = ternary('1_010')
+        const pointC = ternary('2_010')
+
+        const criticalA = Chord.new(pointA, pointB)
+        const criticalB = Chord.new(pointB, pointC)
+        const criticalC = Chord.new(pointC, pointA)
+
+        const specs = [
+            makeBranchSpec(criticalA, pointA),
+            makeBranchSpec(criticalB, pointB),
+            makeBranchSpec(criticalC, pointC)
+        ]
+        const branches = maybeAddFinalBranch(3, buildBranches(specs))
+
+        const startingTriangle = Polygon.new([
+            ternary('_001'),
+            ternary('_010'),
+            ternary('_100'),
+        ])
+
+        const lamination = takeIterations([startingTriangle], branches, 2)
+
+        expect(lamination).toEqual([
+            ['_001, _010, _100'],
+            [
+                '0_001, 2_010, 2_100',
+                '1_010, 1_100, 2_001',
+                '_001, _010, _100',
             ]
         ])
     })
@@ -109,9 +143,9 @@ describe('branch-builder', () => {
 
         const branches = maybeAddFinalBranch(5, buildBranches(specs))
 
-        const laminations = takeIterations(initialLeaves, branches, 2)
+        const lamination = takeIterations(initialLeaves, branches, 2)
 
-        expect(laminations).toEqual([
+        expect(lamination).toEqual([
             [
                 '_002, _003, _330',
                 '_020, _030, _303',

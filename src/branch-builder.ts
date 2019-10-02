@@ -85,7 +85,7 @@ export const buildBranches = (specs: BranchSpec[]): BranchRegion[] => {
 
 export const maybeAddFinalBranch = (base: number, regions: BranchRegion[]): BranchRegion[] => {
   if (regions.length === base) {
-    return
+    return regions
   }
   const finalRegion = BranchRegion.complement(...regions)
   return [...regions, finalRegion]
