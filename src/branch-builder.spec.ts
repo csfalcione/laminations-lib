@@ -1,13 +1,13 @@
 import { NaryFraction } from "./nary"
 import { Chord } from './chord'
-import { PullbackLamination } from './pullback-lamination'
+import { Lamination } from './lamination'
 import { Polygon } from './polygon'
 import { makeBranchSpec, maybeAddFinalBranch, buildBranches } from './branch-builder'
 import { BranchRegion } from './branch-region'
 
 const takeIterations = (firstLeaves: Polygon[], branches: BranchRegion[], n: number) => {
     const laminations = []
-    const pullbackGenerator = PullbackLamination.iterates(firstLeaves, branches)
+    const pullbackGenerator = Lamination.iterates(firstLeaves, branches)
     for (let i = 0; i < n; i++) {
         const leaves = pullbackGenerator.next().value
         laminations.push(leaves.map(leaf => `${leaf}`).sort())

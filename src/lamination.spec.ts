@@ -1,7 +1,7 @@
 import { NaryFraction } from "./nary";
 import { Chord } from './chord';
 import { Polygon } from './polygon';
-import { PullbackLamination } from './pullback-lamination';
+import { Lamination } from './lamination';
 import { BranchRegion } from './branch-region';
 
 const binary = NaryFraction.factory(2)
@@ -14,7 +14,8 @@ const displayPolygon = (poly) => {
 }
 
 describe('PullbackLamination', () => {
-  it('binary rabbit lamination', () => {
+
+  test('pullBack and mapForward are inverses', () => {
     const criticalChord = Chord.new(
       binary([], [0, 0, 1]), // 1/7
       binary([1], [0, 1, 0]) // 9/14
@@ -24,7 +25,37 @@ describe('PullbackLamination', () => {
     const firstRegion = BranchRegion.simple(criticalChord, criticalChord.lower)
     const secondRegion = firstRegion.complement()
 
-    const branches: Array<BranchRegion> = [
+    const branches: BranchRegion[] = [
+      firstRegion,
+      secondRegion,
+    ]
+
+    const startingTriangle = Polygon.new([
+      binary([], [0, 0, 1]), // 1/7
+      binary([], [0, 1, 0]), // 2/7
+      binary([], [1, 0, 0]), // 4/7
+    ])
+
+    let previousPullback = [startingTriangle]
+    for(let i = 0; i < 5; i++) {
+      const newPullback = Lamination.pullBack(previousPullback, branches)
+      const mappedForward = Lamination.mapForward(newPullback)
+      expect(mappedForward.map(displayPolygon)).toEqual(previousPullback.map(displayPolygon))
+      previousPullback = newPullback
+    }
+  })
+
+  test('binary rabbit lamination', () => {
+    const criticalChord = Chord.new(
+      binary([], [0, 0, 1]), // 1/7
+      binary([1], [0, 1, 0]) // 9/14
+    )
+    
+    
+    const firstRegion = BranchRegion.simple(criticalChord, criticalChord.lower)
+    const secondRegion = firstRegion.complement()
+
+    const branches: BranchRegion[] = [
       firstRegion,
       secondRegion,
     ]
@@ -36,7 +67,7 @@ describe('PullbackLamination', () => {
     ])
 
     const laminations = []
-    const pullbackGenerator = PullbackLamination.iterates([startingTriangle], branches)
+    const pullbackGenerator = Lamination.iterates([startingTriangle], branches)
     for (let i = 0; i < 3; i++) {
       const leaves = pullbackGenerator.next().value
       laminations.push(leaves.map(displayPolygon))
@@ -58,7 +89,7 @@ describe('PullbackLamination', () => {
 
   })
 
-  it('ternary symmetric lamination', () => {
+  test('ternary symmetric lamination', () => {
     const criticalA = Chord.new(
       ternary([], [0, 1]), // 1/8
       ternary([2], [1, 0]) // 19/24
@@ -72,7 +103,7 @@ describe('PullbackLamination', () => {
     const secondRegion = BranchRegion.simple(criticalB, criticalB.upper)
     const thirdRegion = BranchRegion.complement(firstRegion, secondRegion)
 
-    const branches: Array<BranchRegion> = [
+    const branches: BranchRegion[] = [
       firstRegion,
       secondRegion,
       thirdRegion
@@ -90,7 +121,7 @@ describe('PullbackLamination', () => {
     ].map(Polygon.fromChord)
 
     const laminations = []
-    const pullbackGenerator = PullbackLamination.iterates(firstLeaves, branches)
+    const pullbackGenerator = Lamination.iterates(firstLeaves, branches)
     for (let i = 0; i < 2; i++) {
       const leaves = pullbackGenerator.next().value
       laminations.push(leaves.map(displayPolygon))
