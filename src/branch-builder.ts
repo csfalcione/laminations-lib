@@ -5,6 +5,7 @@ import { BranchRegion } from './branch-region';
 export interface BranchSpec {
   chord: Chord
   endpoints: NaryFraction[]
+  flip?: boolean
 }
 
 export const makeBranchSpec = (chord: Chord, ...endpoints: NaryFraction[]) => ({chord, endpoints})
@@ -14,7 +15,7 @@ class TreeNode {
   public children: Set<TreeNode>
 
   constructor(protected branchSpec: BranchSpec) {
-    this.region = BranchRegion.simple(branchSpec.chord, ...branchSpec.endpoints)
+    this.region = this.createRegion(branchSpec)
     this.children = new Set()
   }
 
@@ -50,6 +51,14 @@ class TreeNode {
     }
     yield this
   }
+
+  private createRegion(branchSpec: BranchSpec): BranchRegion {
+    if (branchSpec.flip === true) {
+      return BranchRegion.simple_flipped(branchSpec.chord, ...branchSpec.endpoints)
+    }
+    return BranchRegion.simple(branchSpec.chord, ...branchSpec.endpoints)
+  }
+
 }
 
 export const buildBranches = (specs: BranchSpec[]): BranchRegion[] => {

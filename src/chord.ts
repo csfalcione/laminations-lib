@@ -40,8 +40,8 @@ export class Chord {
     return !(this.inInnerRegion(point) || this.onBoundary(point))
   }
 
-  public contains(point:NaryFraction) {
-    if (this.width() > 0.5) {
+  public contains(point:NaryFraction, flip = false) {
+    if (xor(this.width() > 0.5, flip)) {
       return this.inOuterRegion(point)
     }
     return this.inInnerRegion(point)
@@ -64,3 +64,6 @@ export class Chord {
   }
 
 }
+
+// Apparently JS doens't have a logical XOR.
+const xor = (a: boolean, b: boolean): boolean => a ? !b : b

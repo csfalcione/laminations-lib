@@ -17,6 +17,10 @@ export class BranchRegion {
     return unit(or(chord(c), ...points.map(point)))
   }
 
+  public static simple_flipped(c: Chord, ...points: NaryFraction[]): BranchRegion {
+    return unit(or(chord(c, true), ...points.map(point)))
+  }
+
   public static complement(...branches: BranchRegion[]): BranchRegion {
     return unit(none(...branches.map(b => b.unwrap())))
   }
@@ -74,8 +78,8 @@ const point = (p: NaryFraction): Identifier => {
   return (candidate: NaryFraction) => p.equals(candidate)
 }
 
-const chord = (c: Chord): Identifier => {
-  return (point: NaryFraction) => c.contains(point)
+const chord = (c: Chord, flip = false): Identifier => {
+  return (point: NaryFraction) => c.contains(point, flip)
 }
 
 export const operators = {
