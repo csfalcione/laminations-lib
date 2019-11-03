@@ -13,10 +13,10 @@ export class NaryFraction {
 
     constructor(
         base: number,
-        exactPart: number[],
-        repeatingPart: number[]
+        exactPart: Array<number>,
+        repeatingPart: Array<number>
     ) {
-        let [newExact, newRepeating] = NaryFraction.simplify(base, exactPart, repeatingPart)
+        let [newExact, newRepeating] = NaryFraction.simplify(exactPart, repeatingPart)
 
         if (arraysEqual(newRepeating, [base - 1])) {
             newRepeating = []
@@ -37,18 +37,18 @@ export class NaryFraction {
     }
 
     public base: number
-    public exactPart: number[]
-    public repeatingPart: number[]
+    public exactPart: Array<number>
+    public repeatingPart: Array<number>
 
     public static new(
         base: number,
-        exactPart: number[],
-        repeatingPart: number[]): NaryFraction {
+        exactPart: Array<number>,
+        repeatingPart: Array<number>): NaryFraction {
         return new NaryFraction(base, exactPart, repeatingPart)
     }
 
     public static factory(base: number) {
-        return (exactPart: number[], repeatingPart: number[]): NaryFraction => {
+        return (exactPart: Array<number>, repeatingPart: Array<number>): NaryFraction => {
             return new NaryFraction(base, exactPart, repeatingPart)
         }
     }
@@ -62,7 +62,7 @@ export class NaryFraction {
         const digitSplitter = base < 10 ? '' : ','
 
         const exactPart = exactText.split(digitSplitter).map(x => parseInt(x))
-        const repeatingPart = repeatingText.split(digitSplitter).filter(x => x.length > 0).map(x => parseInt(x))
+        const repeatingPart = repeatingText.split(digitSplitter).map(x => parseInt(x))
 
         return new NaryFraction(base, exactPart, repeatingPart)
     }
@@ -71,8 +71,8 @@ export class NaryFraction {
         return (text: string): NaryFraction => NaryFraction.parse(base, text)
     }
 
-    public static simplify(base: number, exactPart: number[], repeatingPart: number[]): [number[], number[]] {
-        repeatingPart = reduceCircularSequence(base, repeatingPart)
+    public static simplify(exactPart: Array<number>, repeatingPart: Array<number>): [Array<number>, Array<number>] {
+        repeatingPart = reduceCircularSequence(repeatingPart)
         const repeatingSuffixStart = findCircularRepeatingSuffix(exactPart, repeatingPart)
         const newExactPart = exactPart.slice(0, repeatingSuffixStart)
 
@@ -110,7 +110,7 @@ export class NaryFraction {
         return fraction.mapForward();
     }
     
-    public static mapBackward(fraction: NaryFraction): NaryFraction[] {
+    public static mapBackward(fraction: NaryFraction): Array<NaryFraction> {
         return fraction.mapBackward();
     }
 
@@ -180,7 +180,7 @@ export class NaryFraction {
         )
     }
 
-    public mapBackward(): NaryFraction[] {
+    public mapBackward(): Array<NaryFraction> {
         const base = this.base
         const exact = this.exactPart
         let result = new Array(base)
@@ -209,18 +209,25 @@ export class NaryFraction {
 
     public numerator(): number {
         const d = this.base
-        return repeatingDenominator(d, this.exactPart) * valueFromDigits(d, this.exactPart)
+        return this.repeatingDenominator() * valueFromDigits(d, this.exactPart)
             + valueFromDigits(d, this.repeatingPart)
     }
 
     public denominator(): number {
-        const unshifted = repeatingDenominator(this.base, this.repeatingPart)
-        return unshifted * Math.pow(this.base, this.exactPart.length)
+        return this.repeatingDenominator() * Math.pow(this.base, this.exactPart.length)
     }
 
     public toString() {
         const joiner = this.base < 10 ? '' : ','
         return `${this.exactPart.join(joiner)}_${this.repeatingPart.join(joiner)}`
+    }
+
+    private repeatingDenominator(): number {
+        const result = Math.pow(this.base, this.repeatingPart.length) - 1
+        if (result === 0) {
+            return 1
+        }
+        return result
     }
 
 }
@@ -229,39 +236,32 @@ export class NaryFraction {
 const mod = (a: number, b: number): number => ((a % b) + b) % b
 
 /**
- * Finds the shortest-length prefix w of 'sequence' such that
+ * Finds the shortest-length contiguous subsequence w of 'sequence' such that
  * 'sequence' is some number of concatenations of w.
  * Ex:
  * [1, 1, 1] -> [1]
  * [1, 2, 3, 1, 2, 3] -> [1, 2, 3]
  * [1, 2, 3, 1, 2] -> [1, 2, 3, 1, 2]
  */
-export const reduceCircularSequence = (base: number, sequence: number[]): number[] => {
-    const [seqNumerator, seqDenominator] = rationalFromDigits(base, sequence)
+export const reduceCircularSequence = <T>(sequence: Array<T>): Array<T> => {
     for (let width = 1; width <= sequence.length / 2; width++) {
         if (sequence.length % width !== 0) {
             continue
         }
-        const prefix = sequence.slice(0, width)
-        const [prefixNumerator, prefixDenominator] = rationalFromDigits(base, prefix)
-        if (seqNumerator === prefixNumerator && seqDenominator == prefixDenominator) {
-            return prefix
+        if (isCircularOfWidth(sequence, width)) {
+            return sequence.slice(0, width)
         }
     }
 
     return sequence
 }
 
-const rationalFromDigits = (base: number, digits: number[]): [number, number] => {
-    const numerator = valueFromDigits(base, digits)
-    const denominator = repeatingDenominator(base, digits)
-    const gcd = greatestCommonDivisor(numerator, denominator)
-    return [Math.round(numerator / gcd), Math.round(denominator / gcd)]
-
-}
-
-const repeatingDenominator = (base: number, digits: number[]): number => {
-    return digits.length > 0 ? Math.pow(base, digits.length) - 1 : 1
+const isCircularOfWidth = <T>(sequence: Array<T>, width: number): boolean => {
+    return range(0, width)
+        .every(startIdx => range(startIdx, sequence.length, width)
+            .map(idx => sequence[idx])
+            .every(val => val === sequence[startIdx])
+        )
 }
 
 /**
@@ -276,7 +276,7 @@ const repeatingDenominator = (base: number, digits: number[]): number => {
  * ([3], []) -> 1
  * ([], []) -> 0
  */
-export const findCircularRepeatingSuffix = <T>(sequence: T[], repeating: T[]): number => {
+export const findCircularRepeatingSuffix = <T>(sequence: Array<T>, repeating: Array<T>): number => {
     const indexSequenceFromRight = idx => sequence.length - idx - 1
     const indexRepeatingFromRight = idx => repeating.length - (idx % repeating.length) - 1
 
@@ -292,7 +292,7 @@ export const findCircularRepeatingSuffix = <T>(sequence: T[], repeating: T[]): n
 }
 
 // ex: ([1,2,3], 1) -> [3,1,2]
-const rotateRight = <T>(array: T[], offset: number): T[] => {
+const rotateRight = <T>(array: Array<T>, offset: number): Array<T> => {
     const len = array.length
     const result = new Array<T>(len)
 
@@ -303,11 +303,11 @@ const rotateRight = <T>(array: T[], offset: number): T[] => {
     return result
 }
 
-const rotateLeft = <T>(array: T[], offset: number): T[] => {
+const rotateLeft = <T>(array: Array<T>, offset: number): Array<T> => {
     return rotateRight(array, -1 * offset)
 }
 
-const arraysEqual = <T>(a: T[], b: T[]): boolean => {
+const arraysEqual = <T>(a: Array<T>, b: Array<T>): boolean => {
     if (a.length !== b.length) {
         return false
     }
@@ -321,8 +321,18 @@ const arraysEqual = <T>(a: T[], b: T[]): boolean => {
     return true
 }
 
+const range = (start: number, end: number, step: number = 1): Array<number> => {
+    const result = []
 
-const valueFromDigits = (base: number, digits: number[]): number => {
+    for (let num = start; num < end; num += step) {
+        result.push(num)
+    }
+
+    return result
+}
+
+
+const valueFromDigits = (base: number, digits: Array<number>): number => {
     let sum = 0
     let place = 1
     for (let idx = digits.length - 1; idx >= 0; idx--) {
@@ -333,7 +343,7 @@ const valueFromDigits = (base: number, digits: number[]): number => {
     return sum
 }
 
-const incrementDigitSequence = (base: number, digits: number[]): number[] => {
+const incrementDigitSequence = (base: number, digits: Array<number>): Array<number> => {
     const copy = [...digits]
     let carry = 1
     let idx = digits.length - 1
@@ -351,7 +361,7 @@ const incrementDigitSequence = (base: number, digits: number[]): number[] => {
     return copy
 }
 
-const removeTrailingZeroes = (array: number[]): number[] => {
+const removeTrailingZeroes = (array: Array<number>): Array<number> => {
     let idx = array.length - 1
 
     while (idx >= 0 && array[idx] === 0) {
