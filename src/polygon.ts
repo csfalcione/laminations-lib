@@ -4,13 +4,13 @@ import {Chord} from './chord'
 
 export class Polygon {
 
-  public points: Array<NaryFraction>
+  public points: NaryFraction[]
 
-  constructor(points: Array<NaryFraction>) {
+  constructor(points: NaryFraction[]) {
     this.points = [...points].sort(NaryFraction.compare)
   }
 
-  public static new(points: Array<NaryFraction>) {
+  public static new(points: NaryFraction[]) {
     return new Polygon(points)
   }
 
@@ -22,7 +22,7 @@ export class Polygon {
     return Polygon.new([chord.lower, chord.upper])
   }
 
-  public static toChords(polygon: Polygon): Array<Chord> {
+  public static toChords(polygon: Polygon): Chord[] {
     return polygon.toChords();
   }
 
@@ -30,7 +30,7 @@ export class Polygon {
     return Polygon.new(this.points.map(NaryFraction.mapForward))
   }
 
-  public toChords(): Array<Chord> {
+  public toChords(): Chord[] {
     const result = []
     const points = this.points
     const lastIdx = points.length - 1
