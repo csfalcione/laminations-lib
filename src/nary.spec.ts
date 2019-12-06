@@ -1,4 +1,4 @@
-import { NaryFraction, findCircularRepeatingSuffix, reduceCircularSequence } from './nary'
+import { NaryFraction, findCircularRepeatingSuffix, reduceCircularSequence, findNaturalSuffixStart, makeKMPFailureTable } from './nary'
 
 
 describe('NaryFraction', () => {
@@ -172,7 +172,7 @@ describe('NaryFraction', () => {
 
 })
 
-describe('findCircularRepeatingSuffix()', () => {
+describe('findCircularRepeatingSuffix', () => {
   const f = findCircularRepeatingSuffix
 
   it('handles edge cases', () => {
@@ -190,11 +190,34 @@ describe('findCircularRepeatingSuffix()', () => {
   })
 })
 
-describe('reduceCircularSequence()', () => {
+describe('reduceCircularSequence', () => {
   const f = reduceCircularSequence
   it('works', () => {
+    expect(f([])).toEqual([])
     expect(f([3, 3, 3])).toEqual([3])
     expect(f([1, 2, 3])).toEqual([1, 2, 3])
     expect(f([1, 2, 3, 1, 2, 3])).toEqual([1, 2, 3])
+    expect(f([1, 2, 3, 1, 2, 3, 1, 2, 3])).toEqual([1, 2, 3])
+    expect(f([1, 2, 3, 1, 2, 4, 1, 2, 3])).toEqual([1, 2, 3, 1, 2, 4, 1, 2, 3])
+    expect(f([1, 2, 1, 1, 2, 1, 1, 2, 1])).toEqual([1, 2, 1])
+    expect(f([1, 2, 1, 1, 2, 1, 1, 2])).toEqual([1, 2, 1, 1, 2, 1, 1, 2])
+  })
+})
+
+describe('makeKMPFailureTable', () => {
+  const f = makeKMPFailureTable
+  it('works', () => {
+    expect(f([1, 2, 1, 1, 2, 1, 1, 2, 1])).toEqual([0, 0, 1, 1, 2, 3, 4, 5, 6])
+  })
+})
+
+describe('findNaturalSuffixStart', () => {
+  const f = findNaturalSuffixStart
+  it('works', () => {
+    expect(f([1, 0, 1, 1, 2, 3, 4, 5])).toEqual(3)
+    expect(f([1, 0, 1, 1])).toEqual(3)
+    expect(f([1, 0, 1])).toEqual(2)
+    expect(f([0, 2, 3, 2])).toEqual(4)
+    expect(f([])).toEqual(0)
   })
 })

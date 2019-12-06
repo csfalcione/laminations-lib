@@ -244,24 +244,89 @@ const mod = (a: number, b: number): number => ((a % b) + b) % b
  * [1, 2, 3, 1, 2] -> [1, 2, 3, 1, 2]
  */
 export const reduceCircularSequence = <T>(sequence: T[]): T[] => {
-    for (let width = 1; width <= sequence.length / 2; width++) {
-        if (sequence.length % width !== 0) {
-            continue
-        }
-        if (isCircularOfWidth(sequence, width)) {
-            return sequence.slice(0, width)
-        }
+    if (sequence.length === 0) {
+        return sequence
+    }
+
+    let prefix_table = makeKMPFailureTable(sequence)
+    let candidate_length = findNaturalSuffixStart(prefix_table) // exclusive
+
+    if (candidate_length === sequence.length) {
+        // Prevents unnecessary copying.
+        return sequence
+    }
+
+    if (sequence.length % candidate_length === 0) {
+        return sequence.slice(0, candidate_length)
     }
 
     return sequence
 }
 
-const isCircularOfWidth = <T>(sequence: T[], width: number): boolean => {
-    return range(0, width)
-        .every(startIdx => range(startIdx, sequence.length, width)
-            .map(idx => sequence[idx])
-            .every(val => val === sequence[startIdx])
-        )
+export const makeKMPFailureTable = <T>(sequence: T[]): number[] => {
+    // This is the failure function from the KMP algorithm.
+    // table[i] is the length of the longest proper prefix of
+    // sequence that is also a suffix of needle (up to i).
+    let table = new Array<number>(sequence.length).fill(0)
+    let prefixEnd = 0 // exclusive
+    let cursor = 1
+    // Key observation: a prefix/suffix match at i, j and a character
+    // match at i+1, j+1 implies a prefix/suffix match at i+1/j+1.
+
+    while (cursor < sequence.length) {
+        const item = sequence[cursor]
+        if (item == sequence[prefixEnd]) {
+            // The order here matters. It could be written as
+            // table[cursor++] = ++prefix_end, 
+            // if one is spiteful of future readers.
+            prefixEnd++
+            table[cursor] = prefixEnd
+            cursor++
+            continue
+        }
+        if (prefixEnd === 0) {
+            table[cursor] = 0
+            cursor++
+            continue
+        }
+        // 'Recursive' step: retry against the longest prefix/suffix
+        // of the current prefix. Recall that the prefix described by
+        // `prefix_end` is exclusive, so the last index of the prefix
+        // is at (prefix_end - 1).
+        prefixEnd = table[prefixEnd - 1]
+    }
+
+    return table
+}
+
+// Finds the first index of a partial sequence of natural numbers.
+// Ex: [1, 0, 1, 1, 2, 3, 4, 5] -> 3
+// Ex: [1, 0, 1, 1] -> 3
+// Ex: [1, 0, 1] -> 2
+// Ex: [0, 2, 3, 2] -> 4
+// Ex: [] -> 0
+export const findNaturalSuffixStart = (sequence: number[]): number => {
+    if (sequence.length === 0) {
+        return 0
+    }
+    const lastIndex = sequence.length - 1
+    const last = sequence[lastIndex]
+
+    if (last <= 0) {
+        return sequence.length
+    }
+
+    for (let i = lastIndex; i > lastIndex - last; i--) {
+        const target = last - (lastIndex - i)
+        if (sequence[i] !== target) {
+            break
+        }
+        if (target === 1) {
+            return i
+        }
+    }
+
+    return sequence.length
 }
 
 /**
@@ -319,16 +384,6 @@ const arraysEqual = <T>(a: T[], b: T[]): boolean => {
     }
 
     return true
-}
-
-const range = (start: number, end: number, step: number = 1): number[] => {
-    const result = []
-
-    for (let num = start; num < end; num += step) {
-        result.push(num)
-    }
-
-    return result
 }
 
 
