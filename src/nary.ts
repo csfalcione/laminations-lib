@@ -109,7 +109,7 @@ export class NaryFraction {
     public static mapForward(fraction: NaryFraction): NaryFraction {
         return fraction.mapForward();
     }
-    
+
     public static mapBackward(fraction: NaryFraction): NaryFraction[] {
         return fraction.mapBackward();
     }

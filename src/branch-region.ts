@@ -7,7 +7,7 @@ type MappingFunc = (Identifier) => Identifier
 export class BranchRegion {
   constructor(
     private identifier: Identifier
-  ) {}
+  ) { }
 
   public static new(identifier: Identifier): BranchRegion {
     return new BranchRegion(identifier)
@@ -36,7 +36,7 @@ export class BranchRegion {
   public unwrap(): Identifier {
     return this.identifier
   }
-  
+
 
   public map(func: MappingFunc): BranchRegion {
     return unit(func(this.identifier))

@@ -20,8 +20,8 @@ describe('PullbackLamination', () => {
       binary([], [0, 0, 1]), // 1/7
       binary([1], [0, 1, 0]) // 9/14
     )
-    
-    
+
+
     const firstRegion = BranchRegion.simple(criticalChord, criticalChord.lower)
     const secondRegion = firstRegion.complement()
 
@@ -37,7 +37,7 @@ describe('PullbackLamination', () => {
     ])
 
     let previousPullback = [startingTriangle]
-    for(let i = 0; i < 5; i++) {
+    for (let i = 0; i < 5; i++) {
       const newPullback = Lamination.pullBack(previousPullback, branches)
       const mappedForward = Lamination.mapForward(newPullback)
       expect(mappedForward.map(displayPolygon)).toEqual(previousPullback.map(displayPolygon))
@@ -50,8 +50,8 @@ describe('PullbackLamination', () => {
       binary([], [0, 0, 1]), // 1/7
       binary([1], [0, 1, 0]) // 9/14
     )
-    
-    
+
+
     const firstRegion = BranchRegion.simple(criticalChord, criticalChord.lower)
     const secondRegion = firstRegion.complement()
 

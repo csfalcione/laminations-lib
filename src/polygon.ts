@@ -1,5 +1,5 @@
-import {NaryFraction} from './nary'
-import {Chord} from './chord'
+import { NaryFraction } from './nary'
+import { Chord } from './chord'
 
 
 export class Polygon {
@@ -36,7 +36,7 @@ export class Polygon {
     const lastIdx = points.length - 1
 
     for (let i = 0; i < lastIdx; i++) {
-      result.push(Chord.new(points[i], points[i+1]))
+      result.push(Chord.new(points[i], points[i + 1]))
     }
 
     if (points.length > 2) {

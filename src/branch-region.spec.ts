@@ -2,7 +2,7 @@ import { NaryFraction } from "./nary"
 import { Chord } from './chord'
 import { BranchRegion, operators } from './branch-region'
 
-const {chord, point, or} = operators
+const { chord, point, or } = operators
 
 
 describe('BranchRegion', () => {
@@ -34,14 +34,14 @@ describe('BranchRegion', () => {
     expect(branchB.contains(pointC)).toBe(true)
     expect(branchB.contains(quintary('_034'))).toBe(true)
     expect(branchB.contains(pointD)).toBe(false)
-    
+
   })
 
   it('defines nested regions', () => {
     const childBranch = BranchRegion.simple(chordD, pointH)
 
     const parentBranch = BranchRegion.simple(chordA, pointA)
-    .without(childBranch)
+      .without(childBranch)
 
     expect(childBranch.contains(quintary('_331'))).toBe(true)
     expect(childBranch.contains(pointG)).toBe(false)

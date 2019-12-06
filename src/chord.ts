@@ -1,4 +1,4 @@
-import {NaryFraction} from './nary'
+import { NaryFraction } from './nary'
 
 
 export class Chord {
@@ -25,11 +25,11 @@ export class Chord {
   }
 
   public intersects(other: Chord): boolean {
-    const containsFirstButNotSecond = (first: NaryFraction, second: NaryFraction) => 
+    const containsFirstButNotSecond = (first: NaryFraction, second: NaryFraction) =>
       this.inInnerRegion(first) && this.inOuterRegion(second)
 
     return containsFirstButNotSecond(other.lower, other.upper)
-        || containsFirstButNotSecond(other.upper, other.lower)
+      || containsFirstButNotSecond(other.upper, other.lower)
   }
 
   public inInnerRegion(point: NaryFraction) {
@@ -40,7 +40,7 @@ export class Chord {
     return !(this.inInnerRegion(point) || this.onBoundary(point))
   }
 
-  public contains(point:NaryFraction, flip = false) {
+  public contains(point: NaryFraction, flip = false) {
     if (xor(this.width() > 0.5, flip)) {
       return this.inOuterRegion(point)
     }

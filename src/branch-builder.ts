@@ -8,7 +8,7 @@ export interface BranchSpec {
   flip?: boolean
 }
 
-export const makeBranchSpec = (chord: Chord, ...endpoints: NaryFraction[]) => ({chord, endpoints})
+export const makeBranchSpec = (chord: Chord, ...endpoints: NaryFraction[]) => ({ chord, endpoints })
 
 class TreeNode {
   public region: BranchRegion
@@ -63,22 +63,22 @@ class TreeNode {
 
 export const buildBranches = (specs: BranchSpec[]): BranchRegion[] => {
   const forestSet = specs.map(TreeNode.new)
-  .reduce((nodes: Set<TreeNode>, newNode: TreeNode) => {
-    for (let node of nodes.values()) {
-      if (node.contains(newNode)) {
-        node.addChild(newNode)
-        return nodes
+    .reduce((nodes: Set<TreeNode>, newNode: TreeNode) => {
+      for (let node of nodes.values()) {
+        if (node.contains(newNode)) {
+          node.addChild(newNode)
+          return nodes
+        }
+        if (newNode.contains(node)) {
+          nodes.delete(node)
+          newNode.addChild(node)
+          nodes.add(newNode)
+        }
       }
-      if (newNode.contains(node)) {
-        nodes.delete(node)
-        newNode.addChild(node)
-        nodes.add(newNode)
-      }
-    }
-    nodes.add(newNode)
+      nodes.add(newNode)
 
-    return nodes
-  }, new Set())
+      return nodes
+    }, new Set())
 
   const rootNodes = [...forestSet.values()]
   return rootNodes.map((root: TreeNode): BranchRegion[] => {

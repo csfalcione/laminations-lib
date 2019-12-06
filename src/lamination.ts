@@ -20,7 +20,7 @@ const getContainedPullback = (branch: BranchRegion) => (number: NaryFraction): N
   return number.mapBackward().filter(branch.unwrap());
 }
 
-function *iterates(leaves: Polygon[], branches: BranchRegion[]): IterableIterator<Polygon[]> {
+function* iterates(leaves: Polygon[], branches: BranchRegion[]): IterableIterator<Polygon[]> {
   let newLeaves = leaves
   while (true) {
     yield newLeaves
@@ -35,9 +35,9 @@ const pullBack = (leaves: Polygon[], branches: BranchRegion[]): Polygon[] => {
     for (const branch of branches) {
       const nextPolygon = Polygon.new(
         leaf.points
-        .map(getContainedPullback(branch))
-        .filter(points => points.length > 0)
-        .map(points => points[0])
+          .map(getContainedPullback(branch))
+          .filter(points => points.length > 0)
+          .map(points => points[0])
       )
       if (nextPolygon.points.length === 0) continue;
       result.push(nextPolygon)
@@ -48,4 +48,4 @@ const pullBack = (leaves: Polygon[], branches: BranchRegion[]): Polygon[] => {
 
 const mapForward = (leaves: Polygon[]) => leaves.map(poly => poly.mapForward()).filter(removeDuplicates())
 
-export const Lamination = {iterates, pullBack, mapForward, removeDuplicates}
+export const Lamination = { iterates, pullBack, mapForward, removeDuplicates }
