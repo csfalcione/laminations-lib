@@ -214,7 +214,7 @@ export class NaryFraction {
     }
 
     public denominator(): number {
-        return this.repeatingDenominator() * Math.pow(this.base, this.exactPart.length)
+        return this.repeatingDenominator() * integer_pow(this.base, this.exactPart.length)
     }
 
     public toString() {
@@ -223,7 +223,7 @@ export class NaryFraction {
     }
 
     private repeatingDenominator(): number {
-        const result = Math.pow(this.base, this.repeatingPart.length) - 1
+        const result = integer_pow(this.base, this.repeatingPart.length) - 1
         if (result === 0) {
             return 1
         }
@@ -432,4 +432,24 @@ const greatestCommonDivisor = (b: number, a: number): number => {
     }
 
     return greatestCommonDivisor(a, mod(b, a))
+}
+
+const integer_pow = (base: number, exponent: number): number => {
+    let result = 1
+    if (exponent === 0) {
+        return result
+    }
+
+    let exp = exponent
+    let pow_i = base
+
+    while (exp > 0) {
+        if ((exp & 1) !== 0) {
+            result *= pow_i
+        }
+        pow_i *= pow_i
+        exp >>= 1
+    }
+
+    return result
 }
