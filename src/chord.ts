@@ -59,6 +59,15 @@ export class Chord {
     return this.upper.toNumber() - this.lower.toNumber()
   }
 
+  public isDiameter(): boolean {
+    const upperNum = this.upper.numerator()
+    const upperDenom = this.upper.denominator()
+    const lowerNum = this.lower.numerator()
+    const lowerDenom = this.lower.denominator()
+    // this.upper >= this.lower implies that the difference below is positive.
+    return 2*(upperNum*lowerDenom - lowerNum*upperDenom) === upperDenom*lowerDenom
+  }
+
   public toString() {
     return `${this.lower}, ${this.upper}`
   }
