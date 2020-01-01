@@ -4,8 +4,8 @@ import { Polygon } from './polygon';
 import { Lamination } from './lamination';
 import { BranchRegion } from './branch-region';
 
-const binary = NaryFraction.factory(2)
-const ternary = NaryFraction.factory(3)
+const binary = NaryFraction.parseFactory(2)
+const ternary = NaryFraction.parseFactory(3)
 
 const displayPoint = (t: NaryFraction) => t.toRational().join('/')
 
@@ -17,8 +17,8 @@ describe('PullbackLamination', () => {
 
   test('pullBack and mapForward are inverses', () => {
     const criticalChord = Chord.new(
-      binary([], [0, 0, 1]), // 1/7
-      binary([1], [0, 1, 0]) // 9/14
+      binary("_001"), // 1/7
+      binary("1_010") // 9/14
     )
 
 
@@ -31,9 +31,9 @@ describe('PullbackLamination', () => {
     ]
 
     const startingTriangle = Polygon.new([
-      binary([], [0, 0, 1]), // 1/7
-      binary([], [0, 1, 0]), // 2/7
-      binary([], [1, 0, 0]), // 4/7
+      binary("_001"), // 1/7
+      binary("_010"), // 2/7
+      binary("_100"), // 4/7
     ])
 
     let previousPullback = [startingTriangle]
@@ -47,8 +47,8 @@ describe('PullbackLamination', () => {
 
   test('binary rabbit lamination', () => {
     const criticalChord = Chord.new(
-      binary([], [0, 0, 1]), // 1/7
-      binary([1], [0, 1, 0]) // 9/14
+      binary("_001"), // 1/7
+      binary("1_010") // 9/14
     )
 
 
@@ -61,9 +61,9 @@ describe('PullbackLamination', () => {
     ]
 
     const startingTriangle = Polygon.new([
-      binary([], [0, 0, 1]), // 1/7
-      binary([], [0, 1, 0]), // 2/7
-      binary([], [1, 0, 0]), // 4/7
+      binary("_001"), // 1/7
+      binary("_010"), // 2/7
+      binary("_100"), // 4/7
     ])
 
     const laminations = []
@@ -91,12 +91,12 @@ describe('PullbackLamination', () => {
 
   test('ternary symmetric lamination', () => {
     const criticalA = Chord.new(
-      ternary([], [0, 1]), // 1/8
-      ternary([2], [1, 0]) // 19/24
+      ternary("_01"), // 1/8
+      ternary("2_10") // 19/24
     )
     const criticalB = Chord.new(
-      ternary([0], [2, 1]), // 7/24
-      ternary([], [1, 2]) // 5/8
+      ternary("0_21"), // 7/24
+      ternary("_12") // 5/8
     )
 
     const firstRegion = BranchRegion.simple(criticalA, criticalA.lower)
@@ -111,12 +111,12 @@ describe('PullbackLamination', () => {
 
     const firstLeaves = [
       Chord.new(
-        ternary([], [0, 1]), // 1/8
-        ternary([], [2, 1]) // 7/8
+        ternary("_01"), // 1/8
+        ternary("_21") // 7/8
       ),
       Chord.new(
-        ternary([], [1, 0]), // 3/8
-        ternary([], [1, 2]) // 5/8
+        ternary("_10"), // 3/8
+        ternary("_12") // 5/8
       )
     ].map(Polygon.fromChord)
 

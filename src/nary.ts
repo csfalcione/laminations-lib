@@ -61,8 +61,12 @@ export class NaryFraction {
 
         const digitSplitter = base < 10 ? '' : ','
 
-        const exactPart = exactText.split(digitSplitter).map(x => parseInt(x))
-        const repeatingPart = repeatingText.split(digitSplitter).map(x => parseInt(x))
+        const exactPart = exactText.split(digitSplitter)
+        .filter(str => str.length > 0)
+        .map(x => parseInt(x))
+        const repeatingPart = repeatingText.split(digitSplitter)
+        .filter(str => str.length > 0)
+        .map(x => parseInt(x))
 
         return new NaryFraction(base, exactPart, repeatingPart)
     }

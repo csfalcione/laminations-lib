@@ -2,15 +2,15 @@ import { Chord } from "./chord"
 import { NaryFraction } from "./nary"
 
 describe('Chord', () => {
-  const binary = NaryFraction.factory(2)
+  const binary = NaryFraction.parseFactory(2)
 
-  const zero = binary([], [])
-  const oneSeventh = binary([], [0, 0, 1])
-  const threeFourteenths = binary([0], [0, 1, 1])
-  const twoSevenths = binary([], [0, 1, 0])
-  const oneHalf = binary([1], [])
-  const elevenFourteenths = binary([1], [1, 0, 0])
-  const sixSevenths = binary([], [1, 1, 0])
+  const zero = binary("_")
+  const oneSeventh = binary("_001")
+  const threeFourteenths = binary("0_011")
+  const twoSevenths = binary("_010")
+  const oneHalf = binary("1_")
+  const elevenFourteenths = binary("1_100")
+  const sixSevenths = binary("_110")
 
   const zero_twoSevenths = Chord.new(zero, twoSevenths)
   const zero_oneHalf = Chord.new(zero, oneHalf)

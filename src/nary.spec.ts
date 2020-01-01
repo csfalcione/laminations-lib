@@ -2,44 +2,44 @@ import { NaryFraction, findCircularRepeatingSuffix, reduceCircularSequence, find
 
 
 describe('NaryFraction', () => {
-  const binary = NaryFraction.factory(2)
-  const ternary = NaryFraction.factory(3)
-  const quaternary = NaryFraction.factory(4)
-  const decimal = NaryFraction.factory(10)
-  const dozenal = NaryFraction.factory(12)
+  const binary = NaryFraction.parseFactory(2)
+  const ternary = NaryFraction.parseFactory(3)
+  const quaternary = NaryFraction.parseFactory(4)
+  const decimal = NaryFraction.parseFactory(10)
+  const dozenal = NaryFraction.parseFactory(12)
 
-  it('support string interpolation', () => {
+  it('supports string interpolation', () => {
     const num = NaryFraction.parse(3, '_102')
     expect(`${num}`).toBe('_102')
   })
 
   it('supports nontrivial equals', () => {
 
-    const a1 = ternary([], [1, 0, 2])
-    const a2 = ternary([1], [0, 2, 1])
-    const a3 = ternary([1, 0], [2, 1, 0])
-    const a4 = ternary([1, 0, 2], [1, 0, 2])
-    const a5 = ternary([1, 0, 2, 1], [0, 2, 1])
-    const b = ternary([2], [1])
+    const a1 = ternary("_102")
+    const a2 = ternary("1_021")
+    const a3 = ternary("10_210")
+    const a4 = ternary("102_102")
+    const a5 = ternary("1021_021")
+    const b = ternary("2_1")
 
-    const c1 = ternary([1], [])
-    const c2 = decimal([], [3])
+    const c1 = ternary("1_")
+    const c2 = decimal("_3")
 
-    const d1 = ternary([], [0])
-    const d2 = binary([0, 0], [])
-    const d3 = decimal([], [9])
-    const d4 = binary([], [1])
+    const d1 = ternary("_0")
+    const d2 = binary("00_")
+    const d3 = decimal("_9")
+    const d4 = binary("_1")
 
-    const e1 = decimal([4], [])
-    const e2 = decimal([3], [9])
-    const e3 = decimal([3, 9], [9])
+    const e1 = decimal("4_")
+    const e2 = decimal("3_9")
+    const e3 = decimal("3,9_9")
 
-    const f1 = ternary([1, 0, 0], [])
-    const f2 = ternary([1], [])
-    const f3 = ternary([1, 0, 0], [0, 0])
+    const f1 = ternary("100_")
+    const f2 = ternary("1_")
+    const f3 = ternary("100_00")
 
-    const g1 = ternary([2], [])
-    const g2 = binary([], [1, 0])
+    const g1 = ternary("2_")
+    const g2 = binary("_10")
 
     expect(a1.equals(a2)).toBe(true)
     expect(a1.equals(a3)).toBe(true)
@@ -66,8 +66,8 @@ describe('NaryFraction', () => {
   })
 
   it('supports less-than', () => {
-    const a = ternary([1, 0, 2], [])
-    const b = ternary([], [1, 0, 2])
+    const a = ternary("102_")
+    const b = ternary("_102")
 
     expect(a.lessThan(b)).toBe(true)
     expect(b.lessThan(a)).toBe(false)
@@ -77,8 +77,8 @@ describe('NaryFraction', () => {
   })
 
   it('supports indexing', () => {
-    const a = ternary([1, 0, 2], [])
-    const b = ternary([1, 0], [1, 0, 2])
+    const a = ternary("102_")
+    const b = ternary("10_102")
 
     expect(a.digitAt(0)).toBe(1)
     expect(a.digitAt(2)).toBe(2)
@@ -102,72 +102,61 @@ describe('NaryFraction', () => {
   })
 
   it('converts to rational numbers', () => {
-    expect(ternary([1], []).toRational())
+    expect(ternary("1_").toRational())
       .toEqual([1, 3])
 
-    expect(decimal([], [3]).toRational())
+    expect(decimal("_3").toRational())
       .toEqual([1, 3])
 
-    expect(binary([1], [1, 0, 1]).toRational())
+    expect(binary("1_101").toRational())
       .toEqual([6, 7])
 
-    expect(quaternary([3, 1], [1, 0, 2]).toRational())
+    expect(quaternary("31_102").toRational())
       .toEqual([93, 112])
 
-    expect(ternary([], []).toRational())
+    expect(ternary("_").toRational())
       .toEqual([0, 1])
 
-    expect(ternary([2], []).toRational())
+    expect(ternary("2_").toRational())
       .toEqual([2, 3])
 
-    expect(binary([], [1, 0]).toRational())
+    expect(binary("_10").toRational())
       .toEqual([2, 3])
   })
 
   it('supports a forward map', () => {
-    expect(
-      ternary([], [])
-        .mapForward()
-    ).toEqual(ternary([], []));
+    expect(ternary("_").mapForward()).toEqual(ternary("_"));
 
-    expect(
-      ternary([], [0, 1, 2])
-        .mapForward()
-    ).toEqual(ternary([], [1, 2, 0]));
+    expect(ternary("_012").mapForward()).toEqual(ternary("_120"));
 
-    expect(
-      ternary([1], [1, 2])
-        .mapForward()
-    ).toEqual(ternary([], [1, 2]));
+    expect(ternary("1_12").mapForward()).toEqual(ternary("_12"));
 
-    expect(
-      ternary([1, 2], []).mapForward()
-        .equals(binary([], [0, 1]).mapForward())
-    ).toBe(true)
+    expect(ternary("12_").mapForward().equals(binary("_01").mapForward())).toBe(true)
   })
 
   it('supports a backwards map', () => {
-    expect(ternary([], [0, 1]).mapBackward())
+    expect(ternary("_01").mapBackward())
       .toEqual([
-        ternary([0], [0, 1]),
-        ternary([1], [0, 1]),
-        ternary([2], [0, 1])
+        ternary("0_01"),
+        ternary("1_01"),
+        ternary("2_01")
       ])
   })
 
   it('supports parsing string input', () => {
-    const parseTernary = NaryFraction.parseFactory(3)
-    const parseDozenal = NaryFraction.parseFactory(12)
+    const rawTernary = NaryFraction.factory(3)
+    const rawDozenal = NaryFraction.factory(12)
 
-    expect(parseTernary('100').equals(ternary([1, 0, 0], [])))
-    expect(parseTernary('100_').equals(ternary([1, 0, 0], [])))
-    expect(parseTernary('_100').equals(ternary([], [1, 0, 0])))
-    expect(parseTernary('1_100').equals(ternary([1], [1, 0, 0])))
-
-    expect(parseDozenal('11,9,2').equals(dozenal([12, 9, 2], [])))
-    expect(parseDozenal('11,9,2_').equals(dozenal([12, 9, 2], [])))
-    expect(parseDozenal('_11,9,2').equals(dozenal([], [11, 9, 2])))
-    expect(parseDozenal('11_11,9,2').equals(dozenal([11], [11, 9, 2])))
+    expect(ternary('100').equals(rawTernary([1, 0, 0], []))).toBe(true)
+    expect(ternary('100_').equals(rawTernary([1, 0, 0], []))).toBe(true)
+    expect(ternary('_100').equals(rawTernary([], [1, 0, 0]))).toBe(true)
+    expect(ternary('1_100').equals(rawTernary([1], [1, 0, 0]))).toBe(true)
+    
+    expect(dozenal('_3').equals(rawDozenal([], [3]))).toBe(true)
+    expect(dozenal('11,9,2').equals(rawDozenal([11, 9, 2], []))).toBe(true)
+    expect(dozenal('11,9,2_').equals(rawDozenal([11, 9, 2], []))).toBe(true)
+    expect(dozenal('_11,9,2').equals(rawDozenal([], [11, 9, 2]))).toBe(true)
+    expect(dozenal('11_11,9,2').equals(rawDozenal([11], [11, 9, 2]))).toBe(true)
   })
 
 })
