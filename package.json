@@ -16,7 +16,9 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "readme": "README.md",
-  "dependencies": {},
+  "dependencies": {
+    "immutable": "^4.0.0-rc.12"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/csfalcione/laminations-lib.git"

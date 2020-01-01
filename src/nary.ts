@@ -1,33 +1,34 @@
+import { List, Repeat } from 'immutable'
 
 /**
  * A class for fractions on the interval [0, 1) represented as a sequence of exact
  * digits followed by a sequence of repeating digits.
  * For example:
  * - In base 3 (ternary), 0.1 (one third) would be represented by
- *   `new NaryFraction(3, [1], [])`
+ *   `NaryFraction.parse(3, "1_")`
  * - In base 2 (binary), 0.101101101... (five sevenths) would be represented by
- *   `new NaryFraction(2, [], [1,0,1])` and 0.1_101101101... (twelve fourteenths)
- *   would be represented by `new NaryFraction(2, [1], [1,0,1])`
+ *   `NaryFraction.parse(2, "_101")` and 0.1_101101101... (twelve fourteenths)
+ *   would be represented by `NaryFraction.parse(2, "1_101")`
  */
 export class NaryFraction {
 
     constructor(
         base: number,
-        exactPart: number[],
-        repeatingPart: number[]
+        exactPart: List<number>,
+        repeatingPart: List<number>
     ) {
         let [newExact, newRepeating] = NaryFraction.simplify(exactPart, repeatingPart)
 
-        if (arraysEqual(newRepeating, [base - 1])) {
-            newRepeating = []
+        if (newRepeating.size === 1 && newRepeating.first() === base - 1) {
+            newRepeating = List()
             newExact = incrementDigitSequence(base, newExact)
         }
 
-        if (arraysEqual(newRepeating, [0])) {
-            newRepeating = []
+        if (newRepeating.size === 1 && newRepeating.first() === 0) {
+            newRepeating = List()
         }
 
-        if (arraysEqual(newRepeating, [])) {
+        if (newRepeating.size === 0) {
             newExact = removeTrailingZeroes(newExact)
         }
 
@@ -37,19 +38,19 @@ export class NaryFraction {
     }
 
     public base: number
-    public exactPart: number[]
-    public repeatingPart: number[]
+    public exactPart: List<number>
+    public repeatingPart: List<number>
 
     public static new(
         base: number,
-        exactPart: number[],
-        repeatingPart: number[]): NaryFraction {
+        exactPart: List<number>,
+        repeatingPart: List<number>): NaryFraction {
         return new NaryFraction(base, exactPart, repeatingPart)
     }
 
     public static factory(base: number) {
         return (exactPart: number[], repeatingPart: number[]): NaryFraction => {
-            return new NaryFraction(base, exactPart, repeatingPart)
+            return new NaryFraction(base, List(exactPart), List(repeatingPart))
         }
     }
 
@@ -61,12 +62,12 @@ export class NaryFraction {
 
         const digitSplitter = base < 10 ? '' : ','
 
-        const exactPart = exactText.split(digitSplitter)
-        .filter(str => str.length > 0)
-        .map(x => parseInt(x))
-        const repeatingPart = repeatingText.split(digitSplitter)
-        .filter(str => str.length > 0)
-        .map(x => parseInt(x))
+        const exactPart = List(exactText.split(digitSplitter))
+            .filter(str => str.length > 0)
+            .map(x => parseInt(x))
+        const repeatingPart = List(repeatingText.split(digitSplitter))
+            .filter(str => str.length > 0)
+            .map(x => parseInt(x))
 
         return new NaryFraction(base, exactPart, repeatingPart)
     }
@@ -75,13 +76,13 @@ export class NaryFraction {
         return (text: string): NaryFraction => NaryFraction.parse(base, text)
     }
 
-    public static simplify(exactPart: number[], repeatingPart: number[]): [number[], number[]] {
+    public static simplify(exactPart: List<number>, repeatingPart: List<number>): [List<number>, List<number>] {
         repeatingPart = reduceCircularSequence(repeatingPart)
         const repeatingSuffixStart = findCircularRepeatingSuffix(exactPart, repeatingPart)
         const newExactPart = exactPart.slice(0, repeatingSuffixStart)
 
-        const repeatingSuffixLen = exactPart.length - repeatingSuffixStart
-        const newRepeatingPart = rotateRight(repeatingPart, repeatingSuffixLen % repeatingPart.length)
+        const repeatingSuffixLen = exactPart.size - repeatingSuffixStart
+        const newRepeatingPart = rotateRight(repeatingPart, repeatingSuffixLen % repeatingPart.size)
 
         return [newExactPart, newRepeatingPart]
     }
@@ -134,15 +135,14 @@ export class NaryFraction {
             return thisNum === otherNum && thisDenom === otherDenom
         }
 
-        return arraysEqual(this.exactPart, other.exactPart)
-            && arraysEqual(this.repeatingPart, other.repeatingPart)
+        return this.exactPart.equals(other.exactPart) && this.repeatingPart.equals(other.repeatingPart)
     }
 
     public lessThan(other: NaryFraction): boolean {
         if (this.base !== other.base) {
             return this.equals(other) === false && this.toNumber() < other.toNumber()
         }
-        const approxLen = frac => frac.exactPart.length + frac.repeatingPart.length
+        const approxLen = (frac: NaryFraction) => frac.exactPart.size + frac.repeatingPart.size
 
         const upperBound = 2 * Math.max(approxLen(this), approxLen(other))
         for (let idx = 0; idx < upperBound; idx++) {
@@ -162,25 +162,25 @@ export class NaryFraction {
     }
 
     public digitAt(idx: number): number {
-        const exactLen = this.exactPart.length
-        const repeatingLen = this.repeatingPart.length
+        const exactLen = this.exactPart.size
+        const repeatingLen = this.repeatingPart.size
 
         if (idx < exactLen) {
-            return this.exactPart[idx]
+            return this.exactPart.get(idx)
         }
 
         if (repeatingLen === 0) {
             return 0
         }
 
-        return this.repeatingPart[(idx - exactLen) % repeatingLen]
+        return this.repeatingPart.get((idx - exactLen) % repeatingLen)
     }
 
     public mapForward(): NaryFraction {
         return NaryFraction.new(
             this.base,
             this.exactPart.slice(1),
-            rotateLeft(this.repeatingPart, this.exactPart.length > 0 ? 0 : 1)
+            rotateLeft(this.repeatingPart, this.exactPart.size > 0 ? 0 : 1)
         )
     }
 
@@ -192,8 +192,8 @@ export class NaryFraction {
         for (let i = 0; i < base; i++) {
             result[i] = NaryFraction.new(
                 base,
-                [i, ...exact],
-                [...this.repeatingPart]
+                exact.unshift(i),
+                this.repeatingPart
             )
         }
         return result
@@ -218,7 +218,7 @@ export class NaryFraction {
     }
 
     public denominator(): number {
-        return this.repeatingDenominator() * integer_pow(this.base, this.exactPart.length)
+        return this.repeatingDenominator() * integer_pow(this.base, this.exactPart.size)
     }
 
     public toString() {
@@ -227,7 +227,7 @@ export class NaryFraction {
     }
 
     private repeatingDenominator(): number {
-        const result = integer_pow(this.base, this.repeatingPart.length) - 1
+        const result = integer_pow(this.base, this.repeatingPart.size) - 1
         if (result === 0) {
             return 1
         }
@@ -247,60 +247,55 @@ const mod = (a: number, b: number): number => ((a % b) + b) % b
  * [1, 2, 3, 1, 2, 3] -> [1, 2, 3]
  * [1, 2, 3, 1, 2] -> [1, 2, 3, 1, 2]
  */
-export const reduceCircularSequence = <T>(sequence: T[]): T[] => {
-    if (sequence.length === 0) {
+export const reduceCircularSequence = <T>(sequence: List<T>): List<T> => {
+    if (sequence.size === 0) {
         return sequence
     }
 
-    let prefix_table = makeKMPFailureTable(sequence)
+    let prefix_table = makeKMPFailureTable(List(sequence))
     let candidate_length = findNaturalSuffixStart(prefix_table) // exclusive
 
-    if (candidate_length === sequence.length) {
-        // Prevents unnecessary copying.
-        return sequence
-    }
-
-    if (sequence.length % candidate_length === 0) {
+    if (sequence.size % candidate_length === 0) {
         return sequence.slice(0, candidate_length)
     }
 
     return sequence
 }
 
-export const makeKMPFailureTable = <T>(sequence: T[]): number[] => {
+export const makeKMPFailureTable = <T>(sequence: List<T>): List<number> => {
     // This is the failure function from the KMP algorithm.
     // table[i] is the length of the longest proper prefix of
     // sequence that is also a suffix of needle (up to i).
-    let table = new Array<number>(sequence.length).fill(0)
-    let prefixEnd = 0 // exclusive
-    let cursor = 1
-    // Key observation: a prefix/suffix match at i, j and a character
-    // match at i+1, j+1 implies a prefix/suffix match at i+1/j+1.
 
-    while (cursor < sequence.length) {
-        const item = sequence[cursor]
-        if (item == sequence[prefixEnd]) {
-            // The order here matters. It could be written as
-            // table[cursor++] = ++prefix_end, 
-            // if one is spiteful of future readers.
-            prefixEnd++
-            table[cursor] = prefixEnd
-            cursor++
-            continue
-        }
-        if (prefixEnd === 0) {
-            table[cursor] = 0
-            cursor++
-            continue
-        }
-        // 'Recursive' step: retry against the longest prefix/suffix
-        // of the current prefix. Recall that the prefix described by
-        // `prefix_end` is exclusive, so the last index of the prefix
-        // is at (prefix_end - 1).
-        prefixEnd = table[prefixEnd - 1]
-    }
+    return Repeat(0, sequence.size).toList().withMutations(table => {
+        let prefixEnd = 0 // exclusive
+        let cursor = 1
+        // Key observation: a prefix/suffix match at i, j and a character
+        // match at i+1, j+1 implies a prefix/suffix match at i+1/j+1.
 
-    return table
+        while (cursor < sequence.size) {
+            const item = sequence.get(cursor)
+            if (item == sequence.get(prefixEnd)) {
+                // The order here matters. It could be written as
+                // table[cursor++] = ++prefix_end, 
+                // if one is spiteful of future readers.
+                prefixEnd++
+                table.set(cursor, prefixEnd)
+                cursor++
+                continue
+            }
+            if (prefixEnd === 0) {
+                table.set(cursor, 0)
+                cursor++
+                continue
+            }
+            // 'Recursive' step: retry against the longest prefix/suffix
+            // of the current prefix. Recall that the prefix described by
+            // `prefix_end` is exclusive, so the last index of the prefix
+            // is at (prefix_end - 1).
+            prefixEnd = table.get(prefixEnd - 1)
+        }
+    })
 }
 
 // Finds the first index of a partial sequence of natural numbers.
@@ -309,20 +304,20 @@ export const makeKMPFailureTable = <T>(sequence: T[]): number[] => {
 // Ex: [1, 0, 1] -> 2
 // Ex: [0, 2, 3, 2] -> 4
 // Ex: [] -> 0
-export const findNaturalSuffixStart = (sequence: number[]): number => {
-    if (sequence.length === 0) {
+export const findNaturalSuffixStart = (sequence: List<number>): number => {
+    if (sequence.size === 0) {
         return 0
     }
-    const lastIndex = sequence.length - 1
-    const last = sequence[lastIndex]
+    const lastIndex = sequence.size - 1
+    const last = sequence.get(lastIndex)
 
     if (last <= 0) {
-        return sequence.length
+        return sequence.size
     }
 
     for (let i = lastIndex; i > lastIndex - last; i--) {
         const target = last - (lastIndex - i)
-        if (sequence[i] !== target) {
+        if (sequence.get(i) !== target) {
             break
         }
         if (target === 1) {
@@ -330,7 +325,7 @@ export const findNaturalSuffixStart = (sequence: number[]): number => {
         }
     }
 
-    return sequence.length
+    return sequence.size
 }
 
 /**
@@ -345,14 +340,14 @@ export const findNaturalSuffixStart = (sequence: number[]): number => {
  * ([3], []) -> 1
  * ([], []) -> 0
  */
-export const findCircularRepeatingSuffix = <T>(sequence: T[], repeating: T[]): number => {
-    const indexSequenceFromRight = idx => sequence.length - idx - 1
-    const indexRepeatingFromRight = idx => repeating.length - (idx % repeating.length) - 1
+export const findCircularRepeatingSuffix = <T>(sequence: List<T>, repeating: List<T>): number => {
+    const indexSequenceFromRight = idx => sequence.size - idx - 1
+    const indexRepeatingFromRight = idx => repeating.size - (idx % repeating.size) - 1
 
-    for (let cursor = 0; cursor < sequence.length; cursor++) {
+    for (let cursor = 0; cursor < sequence.size; cursor++) {
         const sequenceIdx = indexSequenceFromRight(cursor)
         const repeatingIdx = indexRepeatingFromRight(cursor)
-        if (sequence[sequenceIdx] !== repeating[repeatingIdx]) {
+        if (sequence.get(sequenceIdx) !== repeating.get(repeatingIdx)) {
             return sequenceIdx + 1
         }
     }
@@ -361,73 +356,74 @@ export const findCircularRepeatingSuffix = <T>(sequence: T[], repeating: T[]): n
 }
 
 // ex: ([1,2,3], 1) -> [3,1,2]
-const rotateRight = <T>(array: T[], offset: number): T[] => {
-    const len = array.length
-    const result = new Array<T>(len)
-
-    for (let i = 0; i < len; i++) {
-        result[mod(i + offset, len)] = array[i]
+const rotateRight = <T>(list: List<T>, offset: number): List<T> => {
+    const len = list.size
+    if (mod(offset, len) === 0) {
+        return list
+    }
+    if (offset === 1) {
+        return list.withMutations(copy => {
+            const last = copy.last<T>()
+            if (last == null) return
+            copy.pop().unshift(last)
+        })
     }
 
-    return result
-}
-
-const rotateLeft = <T>(array: T[], offset: number): T[] => {
-    return rotateRight(array, -1 * offset)
-}
-
-const arraysEqual = <T>(a: T[], b: T[]): boolean => {
-    if (a.length !== b.length) {
-        return false
-    }
-
-    for (let i = 0; i < a.length; i++) {
-        if (a[i] !== b[i]) {
-            return false
+    return List<T>().setSize(len).withMutations(result => {
+        for (let idx = 0; idx < len; idx++) {
+            result.set(mod(idx + offset, len), list.get(idx))
         }
-    }
+    })
+}
 
-    return true
+const rotateLeft = <T>(list: List<T>, offset: number): List<T> => {
+    if (offset === 1) {
+        return list.withMutations(copy => {
+            const first = copy.first<T>()
+            if (first == null) return
+            copy.shift().push(first)
+        })
+    }
+    return rotateRight(list, -1 * offset)
 }
 
 
-const valueFromDigits = (base: number, digits: number[]): number => {
+const valueFromDigits = (base: number, digits: List<number>): number => {
     let sum = 0
     let place = 1
-    for (let idx = digits.length - 1; idx >= 0; idx--) {
-        sum += digits[idx] * place
+    for (let idx = digits.size - 1; idx >= 0; idx--) {
+        sum += digits.get(idx) * place
         place *= base
     }
 
     return sum
 }
 
-const incrementDigitSequence = (base: number, digits: number[]): number[] => {
-    const copy = [...digits]
-    let carry = 1
-    let idx = digits.length - 1
+const incrementDigitSequence = (base: number, digits: List<number>): List<number> => {
+    return digits.withMutations(copy => {
+        let carry = 1
+        let idx = digits.size - 1
 
-    while (idx >= 0 && carry !== 0) {
-        copy[idx]++
-        carry--
-        if (copy[idx] === base) {
-            copy[idx] = 0
-            carry++
+        while (idx >= 0 && carry !== 0) {
+            copy.update(idx, x => x + 1)
+            carry--
+            if (copy.get(idx) === base) {
+                copy.set(idx, 0)
+                carry++
+            }
+            idx--
         }
-        idx--
-    }
-
-    return copy
+    })
 }
 
-const removeTrailingZeroes = (array: number[]): number[] => {
-    let idx = array.length - 1
+const removeTrailingZeroes = (numbers: List<number>): List<number> => {
+    let idx = numbers.size - 1
 
-    while (idx >= 0 && array[idx] === 0) {
+    while (idx >= 0 && numbers.get(idx) === 0) {
         idx--
     }
 
-    return array.slice(0, idx + 1)
+    return numbers.slice(0, idx + 1)
 }
 
 const greatestCommonDivisor = (b: number, a: number): number => {

@@ -1,4 +1,5 @@
 import { NaryFraction, findCircularRepeatingSuffix, reduceCircularSequence, findNaturalSuffixStart, makeKMPFailureTable } from './nary'
+import { List, Repeat } from 'immutable'
 
 
 describe('NaryFraction', () => {
@@ -90,7 +91,7 @@ describe('NaryFraction', () => {
   })
 
   it('simplifies fractions', () => {
-    const f = NaryFraction.simplify
+    const f = (x, y) => NaryFraction.simplify(List(x), List(y)).map(list => list.toArray())
 
     expect(f([1], [0, 2, 1])).toEqual([[], [1, 0, 2]])
     expect(f([], [3, 3, 3])).toEqual([[], [3]])
@@ -162,7 +163,7 @@ describe('NaryFraction', () => {
 })
 
 describe('findCircularRepeatingSuffix', () => {
-  const f = findCircularRepeatingSuffix
+  const f = (x, y) => findCircularRepeatingSuffix(List(x), List(y))
 
   it('handles edge cases', () => {
     expect(f([3], [0, 2, 1])).toEqual(1)
@@ -180,7 +181,7 @@ describe('findCircularRepeatingSuffix', () => {
 })
 
 describe('reduceCircularSequence', () => {
-  const f = reduceCircularSequence
+  const f = x => reduceCircularSequence(List(x)).toArray()
   it('works', () => {
     expect(f([])).toEqual([])
     expect(f([3, 3, 3])).toEqual([3])
@@ -196,17 +197,17 @@ describe('reduceCircularSequence', () => {
 describe('makeKMPFailureTable', () => {
   const f = makeKMPFailureTable
   it('works', () => {
-    expect(f([1, 2, 1, 1, 2, 1, 1, 2, 1])).toEqual([0, 0, 1, 1, 2, 3, 4, 5, 6])
+    expect(f(List([1, 2, 1, 1, 2, 1, 1, 2, 1]))).toEqual(List([0, 0, 1, 1, 2, 3, 4, 5, 6]))
   })
 })
 
 describe('findNaturalSuffixStart', () => {
   const f = findNaturalSuffixStart
   it('works', () => {
-    expect(f([1, 0, 1, 1, 2, 3, 4, 5])).toEqual(3)
-    expect(f([1, 0, 1, 1])).toEqual(3)
-    expect(f([1, 0, 1])).toEqual(2)
-    expect(f([0, 2, 3, 2])).toEqual(4)
-    expect(f([])).toEqual(0)
+    expect(f(List([1, 0, 1, 1, 2, 3, 4, 5]))).toEqual(3)
+    expect(f(List([1, 0, 1, 1]))).toEqual(3)
+    expect(f(List([1, 0, 1]))).toEqual(2)
+    expect(f(List([0, 2, 3, 2]))).toEqual(4)
+    expect(f(List([]))).toEqual(0)
   })
 })
