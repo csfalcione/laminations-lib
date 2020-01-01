@@ -56,7 +56,12 @@ export class Chord {
   }
 
   public width(): number {
-    return this.upper.toNumber() - this.lower.toNumber()
+    const upperNum = this.upper.numerator()
+    const upperDenom = this.upper.denominator()
+    const lowerNum = this.lower.numerator()
+    const lowerDenom = this.lower.denominator()
+
+    return (upperNum * lowerDenom - lowerNum * upperDenom) / (upperDenom * lowerDenom)
   }
 
   public isDiameter(): boolean {

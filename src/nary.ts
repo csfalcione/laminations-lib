@@ -206,8 +206,8 @@ export class NaryFraction {
     public toRational(): [number, number] {
         const num = this.numerator()
         const denom = this.denominator()
-        const gcd = greatestCommonDivisor(num, denom)
-        return [Math.round(num / gcd), Math.round(denom / gcd)]
+        const gcd = greatestCommonDivisor(num, denom) | 0
+        return [(num / gcd) | 0, (denom / gcd) |  0]
     }
 
 
@@ -396,7 +396,7 @@ const valueFromDigits = (base: number, digits: List<number>): number => {
         place *= base
     }
 
-    return sum
+    return sum | 0
 }
 
 const incrementDigitSequence = (base: number, digits: List<number>): List<number> => {
@@ -451,5 +451,5 @@ const integer_pow = (base: number, exponent: number): number => {
         exp >>= 1
     }
 
-    return result
+    return result | 0
 }
