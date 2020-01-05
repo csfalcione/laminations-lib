@@ -1,16 +1,17 @@
 import { NaryFraction } from './nary'
 import { Chord } from './chord'
+import { List } from 'immutable'
 
 
 export class Polygon {
 
-  public points: NaryFraction[]
+  public points: List<NaryFraction>
 
-  constructor(points: NaryFraction[]) {
-    this.points = [...points].sort(NaryFraction.compare)
+  constructor(points: List<NaryFraction>) {
+    this.points = points.sort(NaryFraction.compare)
   }
 
-  public static new(points: NaryFraction[]) {
+  public static new(points: List<NaryFraction>) {
     return new Polygon(points)
   }
 
@@ -19,10 +20,10 @@ export class Polygon {
   }
 
   public static fromChord(chord: Chord): Polygon {
-    return Polygon.new([chord.lower, chord.upper])
+    return Polygon.new(List.of(chord.lower, chord.upper))
   }
 
-  public static toChords(polygon: Polygon): Chord[] {
+  public static toChords(polygon: Polygon): List<Chord> {
     return polygon.toChords();
   }
 
@@ -30,20 +31,20 @@ export class Polygon {
     return Polygon.new(this.points.map(NaryFraction.mapForward))
   }
 
-  public toChords(): Chord[] {
-    const result = []
+  public toChords(): List<Chord> {
     const points = this.points
-    const lastIdx = points.length - 1
+    const lastIdx = points.size - 1
 
-    for (let i = 0; i < lastIdx; i++) {
-      result.push(Chord.new(points[i], points[i + 1]))
-    }
+    return List().withMutations(result => {
+      for (let i = 0; i < lastIdx; i++) {
+        result.push(Chord.new(points.get(i), points.get(i + 1)))
+      }
 
-    if (points.length > 2) {
-      result.push(Chord.new(points[0], points[lastIdx]))
-    }
+      if (points.size > 2) {
+        result.push(Chord.new(points.first(), points.last()))
+      }
+    })
 
-    return result;
   }
 
   public toString() {

@@ -39,7 +39,7 @@ const pullBack = (leaves: Polygon[], branches: BranchRegion[]): Polygon[] => {
           .filter(points => points.length > 0)
           .map(points => points[0])
       )
-      if (nextPolygon.points.length === 0) continue;
+      if (nextPolygon.points.size === 0) continue;
       result.push(nextPolygon)
     }
   }

@@ -4,6 +4,7 @@ import { Lamination } from './lamination'
 import { Polygon } from './polygon'
 import { makeBranchSpec, maybeAddFinalBranch, buildBranches } from './branch-builder'
 import { BranchRegion } from './branch-region'
+import { List } from 'immutable'
 
 const takeIterations = (firstLeaves: Polygon[], branches: BranchRegion[], n: number) => {
     const laminations = []
@@ -14,6 +15,8 @@ const takeIterations = (firstLeaves: Polygon[], branches: BranchRegion[], n: num
     }
     return laminations
 }
+
+const newPolygon = (points: NaryFraction[]) => Polygon.new(List(points))
 
 describe('branch-builder', () => {
     const ternary = NaryFraction.parseFactory(3)
@@ -83,7 +86,7 @@ describe('branch-builder', () => {
         ]
         const branches = maybeAddFinalBranch(3, buildBranches(specs))
 
-        const startingTriangle = Polygon.new([
+        const startingTriangle = newPolygon([
             ternary('_001'),
             ternary('_010'),
             ternary('_100'),
@@ -117,17 +120,17 @@ describe('branch-builder', () => {
         const criticalD = Chord.new(pointG, pointH)
 
         const initialLeaves = [
-            Polygon.new([
+            newPolygon([
                 pointB,
                 pointD,
                 quintary('_300')
             ]),
-            Polygon.new([
+            newPolygon([
                 quintary('_020'),
                 quintary('_030'),
                 pointF
             ]),
-            Polygon.new([
+            newPolygon([
                 quintary('_002'),
                 quintary('_003'),
                 pointG

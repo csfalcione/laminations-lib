@@ -3,6 +3,7 @@ import { Chord } from './chord';
 import { Polygon } from './polygon';
 import { Lamination } from './lamination';
 import { BranchRegion } from './branch-region';
+import { List } from 'immutable';
 
 const binary = NaryFraction.parseFactory(2)
 const ternary = NaryFraction.parseFactory(3)
@@ -12,6 +13,8 @@ const displayPoint = (t: NaryFraction) => t.toRational().join('/')
 const displayPolygon = (poly) => {
   return poly.points.map(displayPoint).join(', ')
 }
+
+const newPolygon = (points: NaryFraction[]) => Polygon.new(List(points))
 
 describe('PullbackLamination', () => {
 
@@ -30,7 +33,7 @@ describe('PullbackLamination', () => {
       secondRegion,
     ]
 
-    const startingTriangle = Polygon.new([
+    const startingTriangle = newPolygon([
       binary("_001"), // 1/7
       binary("_010"), // 2/7
       binary("_100"), // 4/7
@@ -60,7 +63,7 @@ describe('PullbackLamination', () => {
       secondRegion,
     ]
 
-    const startingTriangle = Polygon.new([
+    const startingTriangle = newPolygon([
       binary("_001"), // 1/7
       binary("_010"), // 2/7
       binary("_100"), // 4/7
