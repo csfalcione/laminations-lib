@@ -1,6 +1,7 @@
 import { NaryFraction } from "./nary";
 import { Polygon } from './polygon';
 import { BranchRegion } from './branch-region';
+import { List } from 'immutable';
 
 const distinct = <T, U>(key: (item: T) => U) => {
   let set = new Set<U>()
@@ -16,7 +17,7 @@ const distinct = <T, U>(key: (item: T) => U) => {
 
 const removeDuplicates = () => distinct<Polygon, String>(poly => poly.toString())
 
-const getContainedPullback = (branch: BranchRegion) => (number: NaryFraction): NaryFraction[] => {
+const getContainedPullback = (branch: BranchRegion) => (number: NaryFraction): List<NaryFraction> => {
   return number.mapBackward().filter(branch.unwrap());
 }
 
@@ -36,8 +37,8 @@ const pullBack = (leaves: Polygon[], branches: BranchRegion[]): Polygon[] => {
       const nextPolygon = Polygon.new(
         leaf.points
           .map(getContainedPullback(branch))
-          .filter(points => points.length > 0)
-          .map(points => points[0])
+          .filter(points => points.size > 0)
+          .map(points => points.first())
       )
       if (nextPolygon.points.size === 0) continue;
       result.push(nextPolygon)

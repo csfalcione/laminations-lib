@@ -136,7 +136,7 @@ describe('NaryFraction', () => {
   })
 
   it('supports a backwards map', () => {
-    expect(ternary("_01").mapBackward().map(point => point.toString()))
+    expect(ternary("_01").mapBackward().map(point => point.toString()).toArray())
       .toEqual([
         "0_01",
         "_10",

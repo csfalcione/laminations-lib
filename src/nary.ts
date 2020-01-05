@@ -1,4 +1,4 @@
-import { List, Repeat } from 'immutable'
+import { List, Repeat, Range } from 'immutable'
 import { cache } from './util'
 
 /**
@@ -116,7 +116,7 @@ export class NaryFraction {
         return fraction.mapForward();
     }
 
-    public static mapBackward(fraction: NaryFraction): NaryFraction[] {
+    public static mapBackward(fraction: NaryFraction): List<NaryFraction> {
         return fraction.mapBackward();
     }
 
@@ -185,19 +185,14 @@ export class NaryFraction {
         )
     }
 
-    public mapBackward(): NaryFraction[] {
+    public mapBackward(): List<NaryFraction> {
         const base = this.base
         const exact = this.exactPart
-        let result = new Array(base)
-
-        for (let i = 0; i < base; i++) {
-            result[i] = NaryFraction.new(
-                base,
-                exact.unshift(i),
-                this.repeatingPart
-            )
-        }
-        return result
+        return Range(0, base).map(newDigit => NaryFraction.new(
+            base,
+            exact.unshift(newDigit),
+            this.repeatingPart
+        )).toList()
     }
 
     public toNumber(): number {
