@@ -1,7 +1,7 @@
 import { NaryFraction } from "./nary";
 import { Polygon } from './polygon';
 import { BranchRegion } from './branch-region';
-import { List } from 'immutable';
+import { List, Range, Set as ImmutableSet } from 'immutable';
 
 const distinct = <T, U>(key: (item: T) => U) => {
   let set = new Set<U>()
@@ -17,10 +17,6 @@ const distinct = <T, U>(key: (item: T) => U) => {
 
 const removeDuplicates = () => distinct<Polygon, String>(poly => poly.toString())
 
-const getContainedPullback = (branch: BranchRegion) => (number: NaryFraction): List<NaryFraction> => {
-  return number.mapBackward().filter(branch.unwrap());
-}
-
 function* iterates(leaves: Polygon[], branches: BranchRegion[]): IterableIterator<Polygon[]> {
   let newLeaves = leaves
   while (true) {
@@ -33,16 +29,22 @@ function* iterates(leaves: Polygon[], branches: BranchRegion[]): IterableIterato
 const pullBack = (leaves: Polygon[], branches: BranchRegion[]): Polygon[] => {
   const result = []
   for (const leaf of leaves) {
+    const pulledBackPoints: List<NaryFraction> = leaf.points.flatMap(point => point.mapBackward())
+
+    let remainingIndices = Range(0, pulledBackPoints.size).toSet()
     for (const branch of branches) {
-      const nextPolygon = Polygon.new(
-        leaf.points
-          .map(getContainedPullback(branch))
-          .filter(points => points.size > 0)
-          .map(points => points.first())
-      )
-      if (nextPolygon.points.size === 0) continue;
+      const filtered = remainingIndices.toSeq()
+        .map((idx): [number, NaryFraction] => [idx, pulledBackPoints.get(idx)])
+        .filter(([_idx, point]) => branch.contains(point))
+
+      remainingIndices = remainingIndices.subtract(filtered.map(([idx, _point]) => idx))
+
+      const newPoints = filtered.map(([_idx, point]) => point).toList()
+      if (newPoints.size === 0) continue
+      const nextPolygon = Polygon.new(newPoints)
       result.push(nextPolygon)
     }
+
   }
   return result
 }
