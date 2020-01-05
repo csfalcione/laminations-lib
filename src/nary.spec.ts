@@ -126,21 +126,21 @@ describe('NaryFraction', () => {
   })
 
   it('supports a forward map', () => {
-    expect(ternary("_").mapForward()).toEqual(ternary("_"));
+    expect(ternary("_").mapForward().equals(ternary("_"))).toBe(true)
 
-    expect(ternary("_012").mapForward()).toEqual(ternary("_120"));
+    expect(ternary("_012").mapForward().equals(ternary("_120"))).toBe(true)
 
-    expect(ternary("1_12").mapForward()).toEqual(ternary("_12"));
+    expect(ternary("1_12").mapForward().equals(ternary("_12"))).toBe(true)
 
     expect(ternary("12_").mapForward().equals(binary("_01").mapForward())).toBe(true)
   })
 
   it('supports a backwards map', () => {
-    expect(ternary("_01").mapBackward())
+    expect(ternary("_01").mapBackward().map(point => point.toString()))
       .toEqual([
-        ternary("0_01"),
-        ternary("1_01"),
-        ternary("2_01")
+        "0_01",
+        "_10",
+        "2_01"
       ])
   })
 

@@ -1,4 +1,5 @@
 import { NaryFraction } from './nary'
+import { cache } from './util'
 
 
 export class Chord {
@@ -55,27 +56,27 @@ export class Chord {
     return Chord.new(this.lower.mapForward(), this.upper.mapForward())
   }
 
-  public width(): number {
+  public width: () => number = cache(() => {
     const upperNum = this.upper.numerator()
     const upperDenom = this.upper.denominator()
     const lowerNum = this.lower.numerator()
     const lowerDenom = this.lower.denominator()
 
     return (upperNum * lowerDenom - lowerNum * upperDenom) / (upperDenom * lowerDenom)
-  }
+  })
 
-  public isDiameter(): boolean {
+  public isDiameter: () => boolean = cache(() => {
     const upperNum = this.upper.numerator()
     const upperDenom = this.upper.denominator()
     const lowerNum = this.lower.numerator()
     const lowerDenom = this.lower.denominator()
     // this.upper >= this.lower implies that the difference below is positive.
-    return 2*(upperNum*lowerDenom - lowerNum*upperDenom) === upperDenom*lowerDenom
-  }
+    return 2 * (upperNum * lowerDenom - lowerNum * upperDenom) === upperDenom * lowerDenom
+  })
 
-  public toString() {
+  public toString: () => String = cache(() => {
     return `${this.lower}, ${this.upper}`
-  }
+  })
 
 }
 

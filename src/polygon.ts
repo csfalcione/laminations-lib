@@ -1,6 +1,7 @@
 import { NaryFraction } from './nary'
 import { Chord } from './chord'
 import { List } from 'immutable'
+import { cache } from './util'
 
 
 export class Polygon {
@@ -31,7 +32,7 @@ export class Polygon {
     return Polygon.new(this.points.map(NaryFraction.mapForward))
   }
 
-  public toChords(): List<Chord> {
+  public toChords: () => List<Chord> = cache(() => {
     const points = this.points
     const lastIdx = points.size - 1
 
@@ -44,11 +45,10 @@ export class Polygon {
         result.push(Chord.new(points.first(), points.last()))
       }
     })
+  })
 
-  }
-
-  public toString() {
+  public toString: () => String = cache(() => {
     return this.points.map(point => point.toString()).join(', ')
-  }
+  })
 
 }

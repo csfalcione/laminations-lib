@@ -1,4 +1,5 @@
 import { List, Repeat } from 'immutable'
+import { cache } from './util'
 
 /**
  * A class for fractions on the interval [0, 1) represented as a sequence of exact
@@ -211,20 +212,20 @@ export class NaryFraction {
     }
 
 
-    public numerator(): number {
+    public numerator: () => number = cache(() => {
         const d = this.base
         return this.repeatingDenominator() * valueFromDigits(d, this.exactPart)
             + valueFromDigits(d, this.repeatingPart)
-    }
+    })
 
-    public denominator(): number {
+    public denominator: () => number  = cache(() => {
         return this.repeatingDenominator() * integer_pow(this.base, this.exactPart.size)
-    }
+    })
 
-    public toString() {
+    public toString: () => String = cache(() => {
         const joiner = this.base < 10 ? '' : ','
         return `${this.exactPart.join(joiner)}_${this.repeatingPart.join(joiner)}`
-    }
+    })
 
     private repeatingDenominator(): number {
         const result = integer_pow(this.base, this.repeatingPart.size) - 1
