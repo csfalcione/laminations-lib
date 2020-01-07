@@ -1,5 +1,5 @@
-import { NaryFraction } from './nary';
-import { Chord } from './chord';
+import { Fractions, Fraction } from './fractions';
+import { Chords, Chord } from './chords';
 
 type Identifier = (NaryFraction) => boolean
 type MappingFunc = (Identifier) => Identifier
@@ -13,11 +13,11 @@ export class BranchRegion {
     return new BranchRegion(identifier)
   }
 
-  public static simple(c: Chord, ...points: NaryFraction[]): BranchRegion {
+  public static simple(c: Chord, ...points: Fraction[]): BranchRegion {
     return unit(or(chord(c), ...points.map(point)))
   }
 
-  public static simple_flipped(c: Chord, ...points: NaryFraction[]): BranchRegion {
+  public static simple_flipped(c: Chord, ...points: Fraction[]): BranchRegion {
     return unit(or(chord(c, true), ...points.map(point)))
   }
 
@@ -25,7 +25,7 @@ export class BranchRegion {
     return unit(none(...branches.map(b => b.unwrap())))
   }
 
-  public contains(point: NaryFraction): boolean {
+  public contains(point: Fraction): boolean {
     return this.identifier(point)
   }
 
@@ -55,31 +55,31 @@ export class BranchRegion {
 const unit = BranchRegion.new
 
 const or = (...identifiers: Identifier[]): Identifier => {
-  return (point: NaryFraction) => identifiers.some(
+  return (point: Fraction) => identifiers.some(
     identifier => identifier(point)
   )
 }
 
 const and = (...identifiers: Identifier[]): Identifier => {
-  return (point: NaryFraction) => identifiers.every(
+  return (point: Fraction) => identifiers.every(
     identifier => identifier(point)
   )
 }
 
 const not = (identifier: Identifier): Identifier => {
-  return (point: NaryFraction) => !identifier(point)
+  return (point: Fraction) => !identifier(point)
 }
 
 const none = (...identifiers: Identifier[]): Identifier => {
   return not(or(...identifiers))
 }
 
-const point = (p: NaryFraction): Identifier => {
-  return (candidate: NaryFraction) => p.equals(candidate)
+const point = (p: Fraction): Identifier => {
+  return (candidate: Fraction) => Fractions.equals(p, candidate)
 }
 
 const chord = (c: Chord, flip = false): Identifier => {
-  return (point: NaryFraction) => c.contains(point, flip)
+  return (point: Fraction) => Chords.contains(c, point, flip)
 }
 
 export const operators = {

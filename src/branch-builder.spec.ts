@@ -1,7 +1,7 @@
-import { NaryFraction } from "./nary"
-import { Chord } from './chord'
+import { Fractions, Fraction } from "./fractions"
+import { Chords } from './chords'
 import { Lamination } from './lamination'
-import { Polygon } from './polygon'
+import { Polygon, Polygons } from './polygons'
 import { makeBranchSpec, maybeAddFinalBranch, buildBranches } from './branch-builder'
 import { BranchRegion } from './branch-region'
 import { List } from 'immutable'
@@ -16,18 +16,18 @@ const takeIterations = (firstLeaves: Polygon[], branches: BranchRegion[], n: num
     return laminations
 }
 
-const newPolygon = (points: NaryFraction[]) => Polygon.new(List(points))
+const newPolygon = (points: Fraction[]) => Polygons.create(List(points))
 
 describe('branch-builder', () => {
-    const ternary = NaryFraction.parseFactory(3)
-    const quintary = NaryFraction.parseFactory(5)
+    const ternary = Fractions.parseFactory(3)
+    const quintary = Fractions.parseFactory(5)
 
     it('works for simple laminations', () => {
-        const criticalA = Chord.new(
+        const criticalA = Chords.create(
             ternary('_01'), // 1/8
             ternary('2_10') // 19/24
         )
-        const criticalB = Chord.new(
+        const criticalB = Chords.create(
             ternary('0_21'), // 7/24
             ternary('_12') // 5/8
         )
@@ -42,15 +42,15 @@ describe('branch-builder', () => {
         const branches = maybeAddFinalBranch(3, buildBranches(specs))
 
         const firstLeaves = [
-            Chord.new(
+            Chords.create(
                 ternary('_01'), // 1/8
                 ternary('_21') // 7/8
             ),
-            Chord.new(
+            Chords.create(
                 ternary('_10'), // 3/8
                 ternary('_12') // 5/8
             )
-        ].map(Polygon.fromChord)
+        ].map(Polygons.fromChord)
 
         const lamination = takeIterations(firstLeaves, branches, 2)
 
@@ -75,9 +75,9 @@ describe('branch-builder', () => {
         const pointB = ternary('1_010')
         const pointC = ternary('2_010')
 
-        const criticalA = Chord.new(pointA, pointB)
-        const criticalB = Chord.new(pointB, pointC)
-        const criticalC = Chord.new(pointC, pointA)
+        const criticalA = Chords.create(pointA, pointB)
+        const criticalB = Chords.create(pointB, pointC)
+        const criticalC = Chords.create(pointC, pointA)
 
         const specs = [
             makeBranchSpec(criticalA, pointA),
@@ -114,10 +114,10 @@ describe('branch-builder', () => {
         const pointG = quintary('_330')
         const pointH = quintary('4_303')
 
-        const criticalA = Chord.new(pointA, pointF)
-        const criticalB = Chord.new(pointB, pointC)
-        const criticalC = Chord.new(pointD, pointE)
-        const criticalD = Chord.new(pointG, pointH)
+        const criticalA = Chords.create(pointA, pointF)
+        const criticalB = Chords.create(pointB, pointC)
+        const criticalC = Chords.create(pointD, pointE)
+        const criticalD = Chords.create(pointG, pointH)
 
         const initialLeaves = [
             newPolygon([

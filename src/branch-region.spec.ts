@@ -1,12 +1,12 @@
-import { NaryFraction } from "./nary"
-import { Chord } from './chord'
+import { Fractions } from "./fractions"
+import { Chords } from './chords'
 import { BranchRegion, operators } from './branch-region'
 
 const { chord, point, or } = operators
 
 
 describe('BranchRegion', () => {
-  const quintary = NaryFraction.parseFactory(5)
+  const quintary = Fractions.parseFactory(5)
 
   const pointA = quintary('_003')
   const pointB = quintary('_033')
@@ -17,10 +17,10 @@ describe('BranchRegion', () => {
   const pointG = quintary('_330')
   const pointH = quintary('4_303')
 
-  const chordA = Chord.new(pointA, pointF)
-  const chordB = Chord.new(pointB, pointC)
-  const chordC = Chord.new(pointD, pointE)
-  const chordD = Chord.new(pointG, pointH)
+  const chordA = Chords.create(pointA, pointF)
+  const chordB = Chords.create(pointB, pointC)
+  const chordC = Chords.create(pointD, pointE)
+  const chordD = Chords.create(pointG, pointH)
 
   it('supports simple branch regions', () => {
     const branchB = BranchRegion.new(

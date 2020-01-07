@@ -1,25 +1,25 @@
-import { NaryFraction } from "./nary";
-import { Chord } from './chord';
-import { Polygon } from './polygon';
+import { Fractions, Fraction } from "./fractions";
+import { Chords } from './chords';
+import { Polygons } from './polygons';
 import { Lamination } from './lamination';
 import { BranchRegion } from './branch-region';
 import { List } from 'immutable';
 
-const binary = NaryFraction.parseFactory(2)
-const ternary = NaryFraction.parseFactory(3)
+const binary = Fractions.parseFactory(2)
+const ternary = Fractions.parseFactory(3)
 
-const displayPoint = (t: NaryFraction) => t.toRational().join('/')
+const displayPoint = (t: Fraction) => Fractions.toRational(t).join('/')
 
 const displayPolygon = (poly) => {
   return poly.points.map(displayPoint).join(', ')
 }
 
-const newPolygon = (points: NaryFraction[]) => Polygon.new(List(points))
+const newPolygon = (points: Fraction[]) => Polygons.create(List(points))
 
 describe('PullbackLamination', () => {
 
   test('pullBack and mapForward are inverses', () => {
-    const criticalChord = Chord.new(
+    const criticalChord = Chords.create(
       binary("_001"), // 1/7
       binary("1_010") // 9/14
     )
@@ -41,15 +41,15 @@ describe('PullbackLamination', () => {
 
     let previousPullback = [startingTriangle]
     for (let i = 0; i < 5; i++) {
-      const newPullback = Lamination.pullBack(previousPullback, branches)
-      const mappedForward = Lamination.mapForward(newPullback)
+      const newPullback = Lamination.pullBack(Fractions.mapBackward)(previousPullback, branches)
+      const mappedForward = Lamination.mapForward(Polygons.mapForward)(newPullback)
       expect(mappedForward.map(displayPolygon)).toEqual(previousPullback.map(displayPolygon))
       previousPullback = newPullback
     }
   })
 
   test('binary rabbit lamination', () => {
-    const criticalChord = Chord.new(
+    const criticalChord = Chords.create(
       binary("_001"), // 1/7
       binary("1_010") // 9/14
     )
@@ -93,11 +93,11 @@ describe('PullbackLamination', () => {
   })
 
   test('ternary symmetric lamination', () => {
-    const criticalA = Chord.new(
+    const criticalA = Chords.create(
       ternary("_01"), // 1/8
       ternary("2_10") // 19/24
     )
-    const criticalB = Chord.new(
+    const criticalB = Chords.create(
       ternary("0_21"), // 7/24
       ternary("_12") // 5/8
     )
@@ -113,15 +113,15 @@ describe('PullbackLamination', () => {
     ]
 
     const firstLeaves = [
-      Chord.new(
+      Chords.create(
         ternary("_01"), // 1/8
         ternary("_21") // 7/8
       ),
-      Chord.new(
+      Chords.create(
         ternary("_10"), // 3/8
         ternary("_12") // 5/8
       )
-    ].map(Polygon.fromChord)
+    ].map(Polygons.fromChord)
 
     const laminations = []
     const pullbackGenerator = Lamination.iterates(firstLeaves, branches)

@@ -1,14 +1,14 @@
-import { Chord } from './chord';
-import { NaryFraction } from './nary';
+import { Chords, Chord } from './chords';
+import { Fractions, Fraction } from './fractions';
 import { BranchRegion } from './branch-region';
 
 export interface BranchSpec {
   chord: Chord
-  endpoints: NaryFraction[]
+  endpoints: Fraction[]
   flip?: boolean
 }
 
-export const makeBranchSpec = (chord: Chord, ...endpoints: NaryFraction[]) => ({ chord, endpoints })
+export const makeBranchSpec = (chord: Chord, ...endpoints: Fraction[]) => ({ chord, endpoints })
 
 class TreeNode {
   public region: BranchRegion
