@@ -21,15 +21,15 @@ function* iterates(leaves: Polygon[], branches: BranchRegion[]): IterableIterato
   let newLeaves = leaves
   while (true) {
     yield newLeaves
-    newLeaves = pullBack(Fractions.mapBackward)(newLeaves, branches)
+    newLeaves = pullBack((_, points) => Polygons.create(points))(newLeaves, branches)
   }
 }
 
 
-const pullBack = (mapBackward: (p: Fraction) => List<Fraction>) => (leaves: Polygon[], branches: BranchRegion[]): Polygon[] => {
+const pullBack = <T extends Polygon>(constructor: (parent: T, children: List<Fraction>) => T) => (leaves: T[], branches: BranchRegion[]): T[] => {
   const result = []
   for (const leaf of leaves) {
-    const pulledBackPoints: List<Fraction> = leaf.points.flatMap(x => mapBackward(x))
+    const pulledBackPoints: List<Fraction> = leaf.points.flatMap(Fractions.mapBackward)
 
     let remainingIndices = Range(0, pulledBackPoints.size).toSet()
     for (const branch of branches) {
@@ -41,10 +41,9 @@ const pullBack = (mapBackward: (p: Fraction) => List<Fraction>) => (leaves: Poly
 
       const newPoints = filtered.map(([_idx, point]) => point).toList()
       if (newPoints.size === 0) continue
-      const nextPolygon = Polygons.create(newPoints)
+      const nextPolygon = constructor(leaf, newPoints)
       result.push(nextPolygon)
     }
-
   }
   return result
 }
