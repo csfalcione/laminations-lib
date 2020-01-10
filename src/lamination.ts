@@ -48,6 +48,6 @@ const pullBack = <T extends Polygon>(raise: (parent: T, polygon: Polygon) => T) 
   return result
 }
 
-const mapForward = (innerMapForward: (p: Polygon) => Polygon) => (leaves: Polygon[]) => leaves.map(innerMapForward).filter(removeDuplicates())
+const mapForward = <T extends Polygon>(innerMapForward: (p: T) => T) => (leaves: T[]) => leaves.map(innerMapForward).filter(removeDuplicates())
 
 export const Laminations = { iterates, pullBack, mapForward, removeDuplicates }
