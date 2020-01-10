@@ -15,7 +15,7 @@ const distinct = <T, U>(key: (item: T) => U) => {
   }
 }
 
-const removeDuplicates = () => distinct<Polygon, String>(poly => poly.toString())
+const removeDuplicates = <T extends Polygon>() => distinct<T, String>(poly => poly.toString())
 
 function* iterates(leaves: Polygon[], branches: BranchRegion[]): IterableIterator<Polygon[]> {
   let newLeaves = leaves
@@ -50,4 +50,4 @@ const pullBack = <T extends Polygon>(raise: (parent: T, polygon: Polygon) => T) 
 
 const mapForward = (innerMapForward: (p: Polygon) => Polygon) => (leaves: Polygon[]) => leaves.map(innerMapForward).filter(removeDuplicates())
 
-export const Lamination = { iterates, pullBack, mapForward, removeDuplicates }
+export const Laminations = { iterates, pullBack, mapForward, removeDuplicates }

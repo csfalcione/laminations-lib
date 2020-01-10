@@ -1,6 +1,6 @@
 export { Fractions, Fraction } from './fractions'
 export { Chords, Chord } from './chords'
 export { Polygons, Polygon } from './polygons'
-export { Lamination } from './lamination'
+export { Laminations } from './lamination'
 export { BranchRegion, operators } from './branch-region'
 export { BranchSpec, makeBranchSpec, buildBranches, maybeAddFinalBranch, makeBuilder } from './branch-builder'

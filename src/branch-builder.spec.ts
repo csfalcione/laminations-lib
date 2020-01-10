@@ -1,6 +1,6 @@
 import { Fractions, Fraction } from "./fractions"
 import { Chords } from './chords'
-import { Lamination } from './lamination'
+import { Laminations } from './lamination'
 import { Polygon, Polygons } from './polygons'
 import { makeBranchSpec, maybeAddFinalBranch, buildBranches } from './branch-builder'
 import { BranchRegion } from './branch-region'
@@ -8,7 +8,7 @@ import { List } from 'immutable'
 
 const takeIterations = (firstLeaves: Polygon[], branches: BranchRegion[], n: number) => {
     const laminations = []
-    const pullbackGenerator = Lamination.iterates(firstLeaves, branches)
+    const pullbackGenerator = Laminations.iterates(firstLeaves, branches)
     for (let i = 0; i < n; i++) {
         const leaves = pullbackGenerator.next().value
         laminations.push(leaves.map(leaf => `${leaf}`).sort())

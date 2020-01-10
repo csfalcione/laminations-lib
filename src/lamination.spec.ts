@@ -1,7 +1,7 @@
 import { Fractions, Fraction } from "./fractions";
 import { Chords } from './chords';
 import { Polygons } from './polygons';
-import { Lamination } from './lamination';
+import { Laminations } from './lamination';
 import { BranchRegion } from './branch-region';
 import { List } from 'immutable';
 
@@ -41,8 +41,8 @@ describe('PullbackLamination', () => {
 
     let previousPullback = [startingTriangle]
     for (let i = 0; i < 5; i++) {
-      const newPullback = Lamination.pullBack((_, b) => b)(previousPullback, branches)
-      const mappedForward = Lamination.mapForward(Polygons.mapForward)(newPullback)
+      const newPullback = Laminations.pullBack((_, b) => b)(previousPullback, branches)
+      const mappedForward = Laminations.mapForward(Polygons.mapForward)(newPullback)
       expect(mappedForward.map(displayPolygon)).toEqual(previousPullback.map(displayPolygon))
       previousPullback = newPullback
     }
@@ -70,7 +70,7 @@ describe('PullbackLamination', () => {
     ])
 
     const laminations = []
-    const pullbackGenerator = Lamination.iterates([startingTriangle], branches)
+    const pullbackGenerator = Laminations.iterates([startingTriangle], branches)
     for (let i = 0; i < 3; i++) {
       const leaves = pullbackGenerator.next().value
       laminations.push(leaves.map(displayPolygon))
@@ -124,7 +124,7 @@ describe('PullbackLamination', () => {
     ].map(Polygons.fromChord)
 
     const laminations = []
-    const pullbackGenerator = Lamination.iterates(firstLeaves, branches)
+    const pullbackGenerator = Laminations.iterates(firstLeaves, branches)
     for (let i = 0; i < 2; i++) {
       const leaves = pullbackGenerator.next().value
       laminations.push(leaves.map(displayPolygon))
