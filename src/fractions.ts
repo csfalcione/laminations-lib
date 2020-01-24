@@ -137,6 +137,12 @@ const greaterThan = (a: Fraction, b: Fraction) => {
     return compare(a, b) === 1
 }
 
+const exactLength = (fraction: Fraction): number => fraction.exactPart.size
+
+const repeatingLength = (fraction: Fraction): number => fraction.repeatingPart.size
+
+const length = (fraction: Fraction): number => exactLength(fraction) + repeatingLength(fraction)
+
 const digitAt = (fraction: Fraction, idx: number): number => {
     const exactLen = fraction.exactPart.size
     const repeatingLen = fraction.repeatingPart.size
@@ -357,6 +363,9 @@ export const Fractions = {
     lessThan,
     greaterThan,
     digitAt,
+    exactLength,
+    repeatingLength,
+    length,
     toNumber,
     toRational,
     numerator,
