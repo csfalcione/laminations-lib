@@ -82,7 +82,7 @@ const parseFactory = (base: number) => (text: string): Fraction => parse(base, t
 const mapForward = (fraction: Fraction): Fraction => create(
     fraction.base,
     fraction.exactPart.slice(1),
-    rotateLeft(fraction.repeatingPart, fraction.exactPart.size > 0 ? 0 : 1)
+    rotateLeft(fraction.repeatingPart, exactLength(fraction) > 0 ? 0 : 1)
 )
 
 const mapBackward = (fraction: Fraction): List<Fraction> =>
@@ -118,9 +118,8 @@ const lessThan = (a: Fraction, b: Fraction): boolean => {
     if (a.base !== b.base) {
         return equals(a, b) === false && toNumber(a) < toNumber(b)
     }
-    const approxLen = (frac: Fraction) => frac.exactPart.size + frac.repeatingPart.size
 
-    const upperBound = 2 * Math.max(approxLen(a), approxLen(b))
+    const upperBound = 2 * Math.max(length(a), length(b))
     for (let idx = 0; idx < upperBound; idx++) {
         const thisDigit = digitAt(a, idx)
         const otherDigit = digitAt(b, idx)
@@ -144,8 +143,8 @@ const repeatingLength = (fraction: Fraction): number => fraction.repeatingPart.s
 const length = (fraction: Fraction): number => exactLength(fraction) + repeatingLength(fraction)
 
 const digitAt = (fraction: Fraction, idx: number): number => {
-    const exactLen = fraction.exactPart.size
-    const repeatingLen = fraction.repeatingPart.size
+    const exactLen = exactLength(fraction)
+    const repeatingLen = repeatingLength(fraction)
 
     if (idx < exactLen) {
         return fraction.exactPart.get(idx)
@@ -177,11 +176,11 @@ const numerator = (fraction: Fraction): number => {
 }
 
 const denominator = (fraction: Fraction): number => {
-    return repeatingDenominator(fraction) * integer_pow(fraction.base, fraction.exactPart.size)
+    return repeatingDenominator(fraction) * integer_pow(fraction.base, exactLength(fraction))
 }
 
 const repeatingDenominator = (fraction: Fraction): number => {
-    const result = integer_pow(fraction.base, fraction.repeatingPart.size) - 1
+    const result = integer_pow(fraction.base, repeatingLength(fraction)) - 1
     if (result === 0) {
         return 1
     }

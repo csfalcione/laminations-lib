@@ -34,7 +34,7 @@ const intersects = (a: Chord, b: Chord): boolean => {
 }
 
 const inInnerRegion = (chord: Chord, point: Fraction) => {
-  return Fractions.greaterThan(point, chord.lower) && Fractions.lessThan(point, chord.upper);
+  return Fractions.greaterThan(point, chord.lower) && Fractions.lessThan(point, chord.upper)
 }
 
 const inOuterRegion = (chord: Chord, point: Fraction) => {
