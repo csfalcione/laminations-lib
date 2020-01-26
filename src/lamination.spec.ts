@@ -41,8 +41,9 @@ describe('PullbackLamination', () => {
 
     let previousPullback = [startingTriangle]
     for (let i = 0; i < 5; i++) {
-      const newPullback = Laminations.pullBack((_, b) => b)(previousPullback, branches)
-      const mappedForward = Laminations.mapForward(Polygons.mapForward)(newPullback)
+      const newPullback = previousPullback.map(poly => Laminations.pullBack(poly, branches))
+        .reduce((acc, leaves) => [...acc, ...leaves])
+      const mappedForward = Laminations.mapForward(newPullback)
       expect(mappedForward.map(displayPolygon)).toEqual(previousPullback.map(displayPolygon))
       previousPullback = newPullback
     }

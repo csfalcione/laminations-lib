@@ -15,39 +15,38 @@ const distinct = <T, U>(key: (item: T) => U) => {
   }
 }
 
-const removeDuplicates = <T extends Polygon>() => distinct<T, String>(poly => poly.toString())
+const removeDuplicates = () => distinct<Polygon, String>(poly => poly.toString())
 
 function* iterates(leaves: Polygon[], branches: BranchRegion[]): IterableIterator<Polygon[]> {
   let newLeaves = leaves
   while (true) {
     yield newLeaves
-    newLeaves = pullBack((_, newPolygon) => newPolygon)(newLeaves, branches)
+    newLeaves = newLeaves
+      .map(leaf => pullBack(leaf, branches))
+      .reduce((acc, leaves) => [...acc, ...leaves])
   }
 }
 
+const pullBack = (leaf: Polygon, branches: BranchRegion[]): Polygon[] => {
+  let result = []
+  const pulledBackPoints: List<Fraction> = leaf.points.flatMap(Fractions.mapBackward)
 
-const pullBack = <T extends Polygon>(raise: (parent: T, polygon: Polygon) => T) => (leaves: T[], branches: BranchRegion[]): T[] => {
-  const result = []
-  for (const leaf of leaves) {
-    const pulledBackPoints: List<Fraction> = leaf.points.flatMap(Fractions.mapBackward)
+  let remainingIndices = Range(0, pulledBackPoints.size).toSet()
+  for (const branch of branches) {
+    const filtered = remainingIndices.toSeq()
+      .map((idx): [number, Fraction] => [idx, pulledBackPoints.get(idx)])
+      .filter(([_idx, point]) => branch.contains(point))
 
-    let remainingIndices = Range(0, pulledBackPoints.size).toSet()
-    for (const branch of branches) {
-      const filtered = remainingIndices.toSeq()
-        .map((idx): [number, Fraction] => [idx, pulledBackPoints.get(idx)])
-        .filter(([_idx, point]) => branch.contains(point))
+    remainingIndices = remainingIndices.subtract(filtered.map(([idx, _point]) => idx))
 
-      remainingIndices = remainingIndices.subtract(filtered.map(([idx, _point]) => idx))
-
-      const newPoints = filtered.map(([_idx, point]) => point).toList()
-      if (newPoints.size === 0) continue
-      const nextPolygon = raise(leaf, Polygons.create(newPoints))
-      result.push(nextPolygon)
-    }
+    const newPoints = filtered.map(([_idx, point]) => point).toList()
+    if (newPoints.size === 0) continue
+    result.push(Polygons.create(newPoints))
   }
   return result
 }
 
-const mapForward = <T extends Polygon>(innerMapForward: (p: T) => T) => (leaves: T[]) => leaves.map(innerMapForward).filter(removeDuplicates())
+
+const mapForward = (leaves: Polygon[]) => leaves.map(Polygons.mapForward).filter(removeDuplicates())
 
 export const Laminations = { iterates, pullBack, mapForward, removeDuplicates }
