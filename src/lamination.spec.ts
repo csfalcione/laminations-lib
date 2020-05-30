@@ -4,9 +4,11 @@ import { Polygons } from './polygons';
 import { Laminations } from './lamination';
 import { BranchRegion } from './branch-region';
 import { List } from 'immutable';
+import { buildBranches } from './branch-builder';
 
 const binary = Fractions.parseFactory(2)
 const ternary = Fractions.parseFactory(3)
+const quaternary = Fractions.parseFactory(4)
 
 const displayPoint = (t: Fraction) => Fractions.toRational(t).join('/')
 
@@ -145,7 +147,62 @@ describe('PullbackLamination', () => {
         '5/24, 19/24'
       ]
     ])
-  }
+  })
 
-  )
+  test('point in multiple branches', () => {
+    const topRight = Chords.create(
+      quaternary('_01'),
+      quaternary('1_10')
+    )
+    const topLeft = Chords.create(
+      quaternary('1_10'),
+      quaternary('2_10')
+    )
+    const bottomRight = Chords.create(
+      quaternary('0_03'),
+      quaternary('_30')
+      )
+    const diameter = Chords.create(
+      quaternary('_01'),
+      quaternary('2_10')
+    )
+
+
+    // _01 is contained within the first and fourth branches.
+    const branches = buildBranches([
+      {
+        chord: topRight,
+        endpoints: [topRight.lower]
+      },
+      {
+        chord: topLeft,
+        endpoints: [topLeft.lower]
+      },
+      {
+        chord: bottomRight,
+        endpoints: [bottomRight.lower]
+      },
+      {
+        chord: diameter,
+        endpoints: [diameter.lower],
+        flip: true,
+      },
+    ])
+
+    const leaf = Polygons.fromChord(Chords.create(
+      quaternary('_03'),
+      quaternary('_10')
+    ))
+
+    const siblings = Laminations.pullBack(leaf, branches).map(Polygons.toString).sort()
+    expect(siblings).toEqual([
+      '0_03, 3_10',
+      '1_10, 2_03',
+      // one of the two following chords will lack _01 if a point can't exist in multiple branches
+      '_01, 1_03',
+      '_01, _30',
+    ])
+
+  })
+
 })

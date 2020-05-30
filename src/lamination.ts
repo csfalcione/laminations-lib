@@ -31,18 +31,11 @@ const pullBack = (leaf: Polygon, branches: BranchRegion[]): Polygon[] => {
   let result = []
   const pulledBackPoints: List<Fraction> = leaf.points.flatMap(Fractions.mapBackward)
 
-  let remainingIndices = Range(0, pulledBackPoints.size).toSet()
   for (const branch of branches) {
-    const filtered = remainingIndices.toSeq()
-      .map((idx): [number, Fraction] => [idx, pulledBackPoints.get(idx)])
-      .filter(([_idx, point]) => branch.contains(point))
-
-    remainingIndices = remainingIndices.subtract(filtered.map(([idx, _point]) => idx))
-
-    const newPoints = filtered.map(([_idx, point]) => point).toList()
-    if (newPoints.size === 0) continue
+    const newPoints = pulledBackPoints.filter(point => branch.contains(point))
     result.push(Polygons.create(newPoints))
   }
+
   return result
 }
 
