@@ -47,6 +47,10 @@ export class TreeNode {
   }
 
   public contains(other: TreeNode) {
+    if (Chords.equals(this.branchSpec.chord, other.branchSpec.chord)) {
+      return this.branchSpec.flip === other.branchSpec.flip;
+    }
+
     return Chords.containsLoose(this.branchSpec.chord, other.branchSpec.chord.lower, this.branchSpec.flip) &&
       Chords.containsLoose(this.branchSpec.chord, other.branchSpec.chord.upper, this.branchSpec.flip) &&
       implies(branchSpecContains(other.branchSpec, other.branchSpec.chord.lower), branchSpecContains(this.branchSpec, other.branchSpec.chord.lower)) &&

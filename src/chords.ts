@@ -81,6 +81,8 @@ const isDiameter = (chord: Chord) => {
   return 2 * (upperNum * lowerDenom - lowerNum * upperDenom) === upperDenom * lowerDenom
 }
 
+const equals = (a: Chord, b: Chord): boolean => Fractions.equals(a.lower, b.lower) && Fractions.equals(a.upper, b.upper)
+
 const toString = (chord: Chord): string => `${chord.lower}, ${chord.upper}`
 
 
@@ -95,5 +97,6 @@ export const Chords = {
   containsLoose,
   width,
   isDiameter,
+  equals,
   toString,
 }

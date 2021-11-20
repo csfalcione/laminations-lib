@@ -272,4 +272,34 @@ describe('TreeNode::contains()', () => {
         expect(biggerNode.contains(smallerNode)).toBe(false)
         expect(smallerNode.contains(biggerNode)).toBe(false)
     })
+
+    test('complicated example', () => {
+        const zero = quaternary('_')
+        const quarter = quaternary('1')
+        const half = quaternary('2')
+        const three_quarters = quaternary('3')
+
+        const first_quarter = TreeNode.new({
+            chord: Chords.create(zero, quarter),
+            endpoints: [quarter],
+        })
+        const first_half = TreeNode.new({
+            chord: Chords.create(zero, half),
+            endpoints: [half],
+        })
+        const second_half = TreeNode.new({
+            chord: Chords.create(zero, half),
+            endpoints: [half],
+            flip: true,
+        })
+        const fourth_quarter = TreeNode.new({
+            chord: Chords.create(zero, three_quarters),
+            endpoints: [three_quarters],
+        })
+
+        expect(first_half.contains(first_quarter)).toBe(true)
+        expect(second_half.contains(fourth_quarter)).toBe(true)
+        expect(first_half.contains(second_half)).toBe(false)
+        expect(second_half.contains(first_half)).toBe(false)
+    })
 })
