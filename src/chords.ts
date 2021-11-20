@@ -37,8 +37,16 @@ const inInnerRegion = (chord: Chord, point: Fraction) => {
   return Fractions.greaterThan(point, chord.lower) && Fractions.lessThan(point, chord.upper)
 }
 
+const inInnerRegionLoose = (chord: Chord, point: Fraction) => {
+  return inInnerRegion(chord, point) || onBoundary(chord, point)
+}
+
 const inOuterRegion = (chord: Chord, point: Fraction) => {
-  return !(inInnerRegion(chord, point) || onBoundary(chord, point))
+  return !inInnerRegionLoose(chord, point)
+}
+
+const inOuterRegionLoose = (chord: Chord, point: Fraction) => {
+  return !inInnerRegion(chord, point)
 }
 
 const contains = (chord: Chord, point: Fraction, flip = false) => {
@@ -46,6 +54,13 @@ const contains = (chord: Chord, point: Fraction, flip = false) => {
     return inOuterRegion(chord, point)
   }
   return inInnerRegion(chord, point)
+}
+
+const containsLoose = (chord: Chord, point: Fraction, flip = false) => {
+  if (xor(width(chord) > 0.5, flip)) {
+    return inOuterRegionLoose(chord, point)
+  }
+  return inInnerRegionLoose(chord, point)
 }
 
 const width = (chord: Chord): number => {
@@ -77,6 +92,7 @@ export const Chords = {
   inInnerRegion,
   inOuterRegion,
   contains,
+  containsLoose,
   width,
   isDiameter,
   toString,

@@ -2,7 +2,7 @@ import { Fractions, Fraction } from "./fractions"
 import { Chords } from './chords'
 import { Laminations } from './lamination'
 import { Polygon, Polygons } from './polygons'
-import { makeBranchSpec, maybeAddFinalBranch, buildBranches } from './branch-builder'
+import { makeBranchSpec, maybeAddFinalBranch, buildBranches, TreeNode } from './branch-builder'
 import { BranchRegion } from './branch-region'
 import { List } from 'immutable'
 
@@ -175,4 +175,101 @@ describe('branch-builder', () => {
 
     })
 
+})
+
+describe('TreeNode::contains()', () => {
+    const quaternary = Fractions.parseFactory(4)
+
+    test('one is strictly in the interior of the other', () => {
+        const diameter = Chords.create(
+            quaternary('_01'),
+            quaternary('2_10')
+        )
+        const smaller = Chords.create(
+            quaternary('0_03'),
+            quaternary('_30')
+        )
+
+        const diameterNode = TreeNode.new({
+            chord: diameter,
+            endpoints: [diameter.lower],
+            flip: true,
+        })
+        const smallerNode = TreeNode.new({
+            chord: smaller,
+            endpoints: [smaller.lower],
+        })
+
+        expect(diameterNode.contains(smallerNode)).toBe(true)
+        expect(smallerNode.contains(diameterNode)).toBe(false)
+
+    })
+
+    test('shared boundary: both open', () => {
+        const bigger = Chords.create(quaternary('_'), quaternary('_12'))
+        const smaller = Chords.create(quaternary('_'), quaternary('_11'))
+
+        const biggerNode = TreeNode.new({
+            chord: bigger,
+            endpoints: []
+        })
+        const smallerNode = TreeNode.new({
+            chord: smaller,
+            endpoints: []
+        })
+
+        expect(biggerNode.contains(smallerNode)).toBe(true)
+        expect(smallerNode.contains(biggerNode)).toBe(false)
+    })
+
+    test('shared boundary: both closed', () => {
+        const bigger = Chords.create(quaternary('_'), quaternary('_12'))
+        const smaller = Chords.create(quaternary('_'), quaternary('_11'))
+
+        const biggerNode = TreeNode.new({
+            chord: bigger,
+            endpoints: [bigger.lower]
+        })
+        const smallerNode = TreeNode.new({
+            chord: smaller,
+            endpoints: [smaller.lower]
+        })
+
+        expect(biggerNode.contains(smallerNode)).toBe(true)
+        expect(smallerNode.contains(biggerNode)).toBe(false)
+    })
+
+    test('shared boundary: bigger closed', () => {
+        const bigger = Chords.create(quaternary('_'), quaternary('_12'))
+        const smaller = Chords.create(quaternary('_'), quaternary('_11'))
+
+        const biggerNode = TreeNode.new({
+            chord: bigger,
+            endpoints: [bigger.lower]
+        })
+        const smallerNode = TreeNode.new({
+            chord: smaller,
+            endpoints: []
+        })
+
+        expect(biggerNode.contains(smallerNode)).toBe(true)
+        expect(smallerNode.contains(biggerNode)).toBe(false)
+    })
+
+    test('shared boundary: smaller closed', () => {
+        const bigger = Chords.create(quaternary('_'), quaternary('_12'))
+        const smaller = Chords.create(quaternary('_'), quaternary('_11'))
+
+        const biggerNode = TreeNode.new({
+            chord: bigger,
+            endpoints: []
+        })
+        const smallerNode = TreeNode.new({
+            chord: smaller,
+            endpoints: [smaller.lower]
+        })
+
+        expect(biggerNode.contains(smallerNode)).toBe(false)
+        expect(smallerNode.contains(biggerNode)).toBe(false)
+    })
 })

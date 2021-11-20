@@ -11,7 +11,7 @@ export const cache = <T>(func: () => T) => (): T => {
 }
 
 export const withCachedToString = <T>(toString: (T) => string, item: T): T => {
-    return {...item, toString: cache(() => toString(item))} as T
+    return { ...item, toString: cache(() => toString(item)) } as T
 }
 
 // ex: ([1,2,3], 1) -> [3,1,2]
@@ -78,3 +78,5 @@ export const integer_pow = (base: number, exponent: number): number => {
 
 
 export const xor = (a: boolean, b: boolean): boolean => a ? !b : b
+
+export const implies = (a: boolean, b: boolean): boolean => !a || b

@@ -1,6 +1,7 @@
 import { Chords, Chord } from './chords';
 import { Fractions, Fraction } from './fractions';
 import { BranchRegion } from './branch-region';
+import { implies } from './util'
 
 export interface BranchSpec {
   chord: Chord
@@ -10,7 +11,11 @@ export interface BranchSpec {
 
 export const makeBranchSpec = (chord: Chord, ...endpoints: Fraction[]) => ({ chord, endpoints })
 
-class TreeNode {
+export const branchSpecContains = (spec: BranchSpec, point: Fraction): boolean => {
+  return Chords.contains(spec.chord, point, spec.flip) || spec.endpoints.some((endpoint) => Fractions.equals(endpoint, point))
+}
+
+export class TreeNode {
   public region: BranchRegion
   public children: Set<TreeNode>
 
@@ -42,7 +47,10 @@ class TreeNode {
   }
 
   public contains(other: TreeNode) {
-    return this.region.containsChord(other.branchSpec.chord)
+    return Chords.containsLoose(this.branchSpec.chord, other.branchSpec.chord.lower, this.branchSpec.flip) &&
+      Chords.containsLoose(this.branchSpec.chord, other.branchSpec.chord.upper, this.branchSpec.flip) &&
+      implies(branchSpecContains(other.branchSpec, other.branchSpec.chord.lower), branchSpecContains(this.branchSpec, other.branchSpec.chord.lower)) &&
+      implies(branchSpecContains(other.branchSpec, other.branchSpec.chord.upper), branchSpecContains(this.branchSpec, other.branchSpec.chord.upper))
   }
 
   public *postOrder(): IterableIterator<TreeNode> {
@@ -65,6 +73,9 @@ export const buildBranches = (specs: BranchSpec[]): BranchRegion[] => {
   const forestSet = specs.map(TreeNode.new)
     .reduce((nodes: Set<TreeNode>, newNode: TreeNode) => {
       for (let node of nodes.values()) {
+        if (node === newNode) {
+          continue;
+        }
         if (node.contains(newNode)) {
           node.addChild(newNode)
           return nodes
@@ -76,7 +87,6 @@ export const buildBranches = (specs: BranchSpec[]): BranchRegion[] => {
         }
       }
       nodes.add(newNode)
-
       return nodes
     }, new Set())
 
