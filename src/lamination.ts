@@ -33,6 +33,9 @@ const pullBack = (leaf: Polygon, branches: BranchRegion[]): Polygon[] => {
 
   for (const branch of branches) {
     const newPoints = pulledBackPoints.filter(point => branch.contains(point))
+    if (newPoints.count() == 0) {
+      continue;
+    }
     result.push(Polygons.create(newPoints))
   }
 

@@ -9,6 +9,7 @@ import { buildBranches } from './branch-builder';
 const binary = Fractions.parseFactory(2)
 const ternary = Fractions.parseFactory(3)
 const quaternary = Fractions.parseFactory(4)
+const quintic = Fractions.parseFactory(5)
 
 const displayPoint = (t: Fraction) => Fractions.toRational(t).join('/')
 
@@ -161,7 +162,7 @@ describe('PullbackLamination', () => {
     const bottomRight = Chords.create(
       quaternary('0_03'),
       quaternary('_30')
-      )
+    )
     const diameter = Chords.create(
       quaternary('_01'),
       quaternary('2_10')
@@ -203,6 +204,47 @@ describe('PullbackLamination', () => {
       '_01, _30',
     ])
 
+  })
+
+  test('no empty polygons', () => {
+    const chordA = Chords.create(quintic('_1'), quintic('2_1'))
+    const chordB = Chords.create(quintic('_2'), quintic('2_2'))
+    const chordC = Chords.create(quintic('2_2'), quintic('3_2'))
+    const chordD = Chords.create(quintic('3_2'), quintic('0_2'))
+    const chordE = Chords.create(quintic('0_2'), quintic('_2'))
+
+
+    const branches = buildBranches([
+      {
+        chord: chordA,
+        endpoints: [chordA.upper]
+      },
+      {
+        chord: chordB,
+        endpoints: [chordB.upper]
+      },
+      {
+        chord: chordC,
+        endpoints: [chordC.upper]
+      },
+      {
+        chord: chordD,
+        endpoints: [chordD.upper]
+      },
+      {
+        chord: chordE,
+        endpoints: [chordE.upper]
+      },
+    ])
+
+    const leafA = Polygons.fromChord(Chords.create(
+      quintic('_1'),
+      quintic('_2')
+    ))
+    const leafB = newPolygon([quintic('_1')])
+
+    const siblings = Laminations.pullBack(leafB, branches)
+    expect(siblings.every(leaf => leaf.points.count() > 0)).toBe(true)
   })
 
 })
