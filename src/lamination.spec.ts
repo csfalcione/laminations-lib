@@ -6,10 +6,10 @@ import { BranchRegion } from './branch-region';
 import { List } from 'immutable';
 import { buildBranches } from './branch-builder';
 
-const binary = Fractions.parseFactory(2)
-const ternary = Fractions.parseFactory(3)
-const quaternary = Fractions.parseFactory(4)
-const quintic = Fractions.parseFactory(5)
+const binary = Fractions.parseUnsafeFactory(2)
+const ternary = Fractions.parseUnsafeFactory(3)
+const quaternary = Fractions.parseUnsafeFactory(4)
+const quintic = Fractions.parseUnsafeFactory(5)
 
 const displayPoint = (t: Fraction) => Fractions.toRational(t).join('/')
 

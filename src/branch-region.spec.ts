@@ -6,7 +6,7 @@ const { chord, point, or } = operators
 
 
 describe('BranchRegion', () => {
-  const quintary = Fractions.parseFactory(5)
+  const quintary = Fractions.parseUnsafeFactory(5)
 
   const pointA = quintary('_003')
   const pointB = quintary('_033')

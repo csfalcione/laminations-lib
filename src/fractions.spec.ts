@@ -4,11 +4,11 @@ import { List } from 'immutable'
 const equals = Fractions.equals
 
 describe('NaryFraction', () => {
-  const binary = Fractions.parseFactory(2)
-  const ternary = Fractions.parseFactory(3)
-  const quaternary = Fractions.parseFactory(4)
-  const decimal = Fractions.parseFactory(10)
-  const dozenal = Fractions.parseFactory(12)
+  const binary = Fractions.parseUnsafeFactory(2)
+  const ternary = Fractions.parseUnsafeFactory(3)
+  const quaternary = Fractions.parseUnsafeFactory(4)
+  const decimal = Fractions.parseUnsafeFactory(10)
+  const dozenal = Fractions.parseUnsafeFactory(12)
 
   it('supports string interpolation', () => {
     const num = ternary('_102')

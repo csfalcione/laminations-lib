@@ -19,8 +19,8 @@ const takeIterations = (firstLeaves: Polygon[], branches: BranchRegion[], n: num
 const newPolygon = (points: Fraction[]) => Polygons.create(List(points))
 
 describe('branch-builder', () => {
-    const ternary = Fractions.parseFactory(3)
-    const quintary = Fractions.parseFactory(5)
+    const ternary = Fractions.parseUnsafeFactory(3)
+    const quintary = Fractions.parseUnsafeFactory(5)
 
     it('works for simple laminations', () => {
         const criticalA = Chords.create(
@@ -178,7 +178,7 @@ describe('branch-builder', () => {
 })
 
 describe('TreeNode::contains()', () => {
-    const quaternary = Fractions.parseFactory(4)
+    const quaternary = Fractions.parseUnsafeFactory(4)
 
     test('one is strictly in the interior of the other', () => {
         const diameter = Chords.create(

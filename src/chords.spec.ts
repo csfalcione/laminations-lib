@@ -2,7 +2,7 @@ import { Chords } from "./chords"
 import { Fractions } from "./fractions"
 
 describe('Chords', () => {
-  const binary = Fractions.parseFactory(2)
+  const binary = Fractions.parseUnsafeFactory(2)
 
   const zero = binary("_")
   const oneSeventh = binary("_001")

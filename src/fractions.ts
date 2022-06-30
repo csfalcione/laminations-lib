@@ -7,10 +7,10 @@ import { cache, integer_pow, greatestCommonDivisor, rotateRight, rotateLeft, wit
  * digits followed by a sequence of repeating digits.
  * For example:
  * - In base 3 (ternary), 0.1 (one third) would be represented by
- *   `parse(3, "1_")`
+ *   `parseUnsafe(3, "1_")`
  * - In base 2 (binary), 0.101101101... (five sevenths) would be represented by
- *   `parse(2, "_101")` and 0.1_101101101... (twelve fourteenths)
- *   would be represented by `parse(2, "1_101")`
+ *   `parseUnsafe(2, "_101")` and 0.1_101101101... (twelve fourteenths)
+ *   would be represented by `parseUnsafe(2, "1_101")`
  */
 
 export interface Fraction {
@@ -59,7 +59,7 @@ const simplify = (exactPart: List<number>, repeatingPart: List<number>): [List<n
     return [newExactPart, newRepeatingPart]
 }
 
-const parse = (base: number, text: string): Fraction => {
+const parseUnsafe = (base: number, text: string): Fraction => {
     let [exactText, repeatingText] = text.split('_')
     if (repeatingText == null) {
         repeatingText = ''
@@ -77,7 +77,7 @@ const parse = (base: number, text: string): Fraction => {
     return create(base, exactPart, repeatingPart)
 }
 
-const parseFactory = (base: number) => (text: string): Fraction => parse(base, text)
+const parseUnsafeFactory = (base: number) => (text: string): Fraction => parseUnsafe(base, text)
 
 const mapForward = (fraction: Fraction): Fraction => create(
     fraction.base,
@@ -353,8 +353,8 @@ export const Fractions = {
     fromArrays,
     fromArraysFactory,
     simplify,
-    parse,
-    parseFactory,
+    parseUnsafe,
+    parseUnsafeFactory,
     mapForward,
     mapBackward,
     compare,
