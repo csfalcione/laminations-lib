@@ -1,4 +1,8 @@
 import { List } from 'immutable'
+import { Result, Ok, Err } from 'pratica'
+
+
+export const id = x => x;
 
 export const cache = <T>(func: () => T) => (): T => {
     let result: T = null
@@ -80,3 +84,17 @@ export const integer_pow = (base: number, exponent: number): number => {
 export const xor = (a: boolean, b: boolean): boolean => a ? !b : b
 
 export const implies = (a: boolean, b: boolean): boolean => !a || b
+
+export const unwrap = <T, E>(result: Result<T, E>): T => {
+    return result.cata({
+        Ok: id,
+        Err: () => { throw new Error(`Cannot unwrap an Err: ${result.inspect()}`) },
+    })
+}
+
+export const unwrapErr = <T, E>(result: Result<T, E>): E => {
+    return result.cata({
+        Ok: () => { throw new Error(`Cannot unwrapErr an Ok: ${result.inspect()}`) },
+        Err: id,
+    })
+}

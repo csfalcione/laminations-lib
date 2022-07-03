@@ -1,4 +1,5 @@
 import { Fractions } from './fractions'
+import { unwrap } from './util'
 import { List } from 'immutable'
 
 const equals = Fractions.equals
@@ -163,17 +164,20 @@ describe('NaryFraction', () => {
     const rawTernary = Fractions.fromArraysFactory(3)
     const rawDozenal = Fractions.fromArraysFactory(12)
 
-    expect(equals(ternary('100'), rawTernary([1, 0, 0], []))).toBe(true)
+    const safeTernary = Fractions.parseFactory(3)
+    const safeDozenal = Fractions.parseFactory(12)
 
-    expect(equals(ternary('100_'), rawTernary([1, 0, 0], []))).toBe(true)
-    expect(equals(ternary('_100'), rawTernary([], [1, 0, 0]))).toBe(true)
-    expect(equals(ternary('1_100'), rawTernary([1], [1, 0, 0]))).toBe(true)
+    expect(equals(unwrap(safeTernary('100')), rawTernary([1, 0, 0], []))).toBe(true)
 
-    expect(equals(dozenal('_3'), rawDozenal([], [3]))).toBe(true)
-    expect(equals(dozenal('11,9,2'), rawDozenal([11, 9, 2], []))).toBe(true)
-    expect(equals(dozenal('11,9,2_'), rawDozenal([11, 9, 2], []))).toBe(true)
-    expect(equals(dozenal('_11,9,2'), rawDozenal([], [11, 9, 2]))).toBe(true)
-    expect(equals(dozenal('11_11,9,2'), rawDozenal([11], [11, 9, 2]))).toBe(true)
+    expect(equals(unwrap(safeTernary('100_')), rawTernary([1, 0, 0], []))).toBe(true)
+    expect(equals(unwrap(safeTernary('_100')), rawTernary([], [1, 0, 0]))).toBe(true)
+    expect(equals(unwrap(safeTernary('1_100')), rawTernary([1], [1, 0, 0]))).toBe(true)
+
+    expect(equals(unwrap(safeDozenal('_3')), rawDozenal([], [3]))).toBe(true)
+    expect(equals(unwrap(safeDozenal('11,9,2')), rawDozenal([11, 9, 2], []))).toBe(true)
+    expect(equals(unwrap(safeDozenal('11,9,2_')), rawDozenal([11, 9, 2], []))).toBe(true)
+    expect(equals(unwrap(safeDozenal('_11,9,2')), rawDozenal([], [11, 9, 2]))).toBe(true)
+    expect(equals(unwrap(safeDozenal('11_11,9,2')), rawDozenal([11], [11, 9, 2]))).toBe(true)
   })
 
 })

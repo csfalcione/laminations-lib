@@ -1,5 +1,6 @@
 import { List, Repeat, Range } from 'immutable'
-import { cache, integer_pow, greatestCommonDivisor, rotateRight, rotateLeft, withCachedToString } from './util'
+import { Result, Ok, Err } from 'pratica'
+import { integer_pow, greatestCommonDivisor, rotateRight, rotateLeft, withCachedToString, unwrap, unwrapErr, id } from './util'
 
 
 /**
@@ -58,6 +59,50 @@ const simplify = (exactPart: List<number>, repeatingPart: List<number>): [List<n
 
     return [newExactPart, newRepeatingPart]
 }
+
+const parse = (base: number, text: string): Result<Fraction, string> => {
+    let [exactText, repeatingText] = text.split('_')
+    if (repeatingText == null) {
+        repeatingText = ''
+    }
+
+    const digitSplitter = base < 10 ? '' : ','
+
+    const parseDigit = (digit: string) => {
+        if (digit.length == 0) { return Err("digits cannot be empty") }
+        const int = parseInt(digit)
+        if (isNaN(int)) { return Err(`${digit} is not an integer`) }
+        return Ok(int)
+    };
+
+    const combineParseResults = (results: Result<number, string>[]): Result<number[], string[]> => {
+        let errors = results.filter(result => result.isErr())
+        if (errors.length > 1) {
+            return Err(errors.map(unwrapErr))
+        }
+        return Ok(results.map(unwrap))
+    }
+
+    const exactPart = combineParseResults(exactText.split(digitSplitter)
+        .filter(digit => digit.length > 0)
+        .map(parseDigit))
+    const repeatingPart = combineParseResults(repeatingText.split(digitSplitter)
+        .filter(digit => digit.length > 0)
+        .map(parseDigit))
+
+    return exactPart.cata({
+        Ok: exact => repeatingPart.cata({
+            Ok: repeating => Ok(create(base, List(exact), List(repeating))),
+            Err: id,
+        }),
+        Err: exactErrs => repeatingPart.cata({
+            Ok: _ => exactErrs,
+            Err: repeatingErrs => [...exactErrs, ...repeatingErrs],
+        }),
+    })
+}
+
+const parseFactory = (base: number) => (text: string): Result<Fraction, string> => parse(base, text)
 
 const parseUnsafe = (base: number, text: string): Fraction => {
     let [exactText, repeatingText] = text.split('_')
@@ -310,21 +355,21 @@ const findCircularRepeatingSuffix = <T>(sequence: List<T>, repeating: List<T>): 
 }
 
 
-const valueFromDigits = (base: number, digits: List<number>): number => {
+const valueFromDigits = (base: number, digit: List<number>): number => {
     let sum = 0
     let place = 1
-    for (let idx = digits.size - 1; idx >= 0; idx--) {
-        sum += digits.get(idx) * place
+    for (let idx = digit.size - 1; idx >= 0; idx--) {
+        sum += digit.get(idx) * place
         place *= base
     }
 
     return sum | 0
 }
 
-const incrementDigitSequence = (base: number, digits: List<number>): List<number> => {
-    return digits.withMutations(copy => {
+const incrementDigitSequence = (base: number, digit: List<number>): List<number> => {
+    return digit.withMutations(copy => {
         let carry = 1
-        let idx = digits.size - 1
+        let idx = digit.size - 1
 
         while (idx >= 0 && carry !== 0) {
             copy.update(idx, x => x + 1)
@@ -353,6 +398,8 @@ export const Fractions = {
     fromArrays,
     fromArraysFactory,
     simplify,
+    parse,
+    parseFactory,
     parseUnsafe,
     parseUnsafeFactory,
     mapForward,
