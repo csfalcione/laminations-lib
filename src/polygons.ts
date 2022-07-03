@@ -19,7 +19,7 @@ const toChords = (polygon: Polygon): List<Chord> => {
   const points = polygon.points
   const lastIdx = points.size - 1
 
-  return List().withMutations(result => {
+  return List<Chord>().withMutations(result => {
     for (let i = 0; i < lastIdx; i++) {
       result.push(Chords.create(points.get(i), points.get(i + 1)))
     }

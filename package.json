@@ -17,7 +17,7 @@
   "types": "dist/index.d.ts",
   "readme": "README.md",
   "dependencies": {
-    "immutable": "^4.0.0-rc.12",
+    "immutable": "^4.1.0",
     "pratica": "^2.0.3"
   },
   "repository": {
