@@ -169,6 +169,7 @@ describe('NaryFraction', () => {
 
     expect(equals(unwrap(safeTernary('100')), rawTernary([1, 0, 0], []))).toBe(true)
 
+    expect(Fractions.parse(3, '_01').inspect()).toEqual('Ok(_01)')
     expect(equals(unwrap(safeTernary('100_')), rawTernary([1, 0, 0], []))).toBe(true)
     expect(equals(unwrap(safeTernary('_100')), rawTernary([], [1, 0, 0]))).toBe(true)
     expect(equals(unwrap(safeTernary('1_100')), rawTernary([1], [1, 0, 0]))).toBe(true)
@@ -182,6 +183,11 @@ describe('NaryFraction', () => {
 
   it('supports parsing invalid string input', () => {
     expect(Fractions.parse(3, 'f').isErr()).toBe(true)
+
+    expect(Fractions.parse(2, '3').isErr()).toBe(true)
+    expect(Fractions.parse(2, '-1').isErr()).toBe(true)
+
+    expect(Fractions.parse('q' as unknown as number, "_01").isErr()).toBe(true)
   })
 
 })

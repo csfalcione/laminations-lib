@@ -61,6 +61,10 @@ const simplify = (exactPart: List<number>, repeatingPart: List<number>): [List<n
 }
 
 const parse = (base: number, text: string): Result<Fraction, string[]> => {
+    if (typeof base !== 'number') {
+        return Err([`Base must be a number: ${base}`])
+    }
+
     let [exactText, repeatingText] = text.split('_')
     if (repeatingText == null) {
         repeatingText = ''
@@ -70,9 +74,12 @@ const parse = (base: number, text: string): Result<Fraction, string[]> => {
 
     const parseDigit = (digit: string) => {
         if (digit.length == 0) { return Err("digits cannot be empty") }
-        const int = parseInt(digit)
-        if (isNaN(int)) { return Err(`${digit} is not an integer`) }
-        return Ok(int)
+        const parsed = parseInt(digit)
+        if (isNaN(parsed)) { return Err(`${digit} is not an integer`) }
+        if (parsed < 0 || parsed >= base) {
+            return Err(`Digit must be non-negative and less than ${base}`)
+        }
+        return Ok(parsed)
     };
 
     const combineParseResults = (results: Result<number, string>[]): Result<number[], string[]> => {
