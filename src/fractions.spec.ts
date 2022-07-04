@@ -160,7 +160,7 @@ describe('NaryFraction', () => {
       ])
   })
 
-  it('supports parsing string input', () => {
+  it('supports parsing valid string input', () => {
     const rawTernary = Fractions.fromArraysFactory(3)
     const rawDozenal = Fractions.fromArraysFactory(12)
 
@@ -178,6 +178,10 @@ describe('NaryFraction', () => {
     expect(equals(unwrap(safeDozenal('11,9,2_')), rawDozenal([11, 9, 2], []))).toBe(true)
     expect(equals(unwrap(safeDozenal('_11,9,2')), rawDozenal([], [11, 9, 2]))).toBe(true)
     expect(equals(unwrap(safeDozenal('11_11,9,2')), rawDozenal([11], [11, 9, 2]))).toBe(true)
+  })
+
+  it('supports parsing invalid string input', () => {
+    expect(Fractions.parse(3, 'f').isErr()).toBe(true)
   })
 
 })

@@ -60,7 +60,7 @@ const simplify = (exactPart: List<number>, repeatingPart: List<number>): [List<n
     return [newExactPart, newRepeatingPart]
 }
 
-const parse = (base: number, text: string): Result<Fraction, string> => {
+const parse = (base: number, text: string): Result<Fraction, string[]> => {
     let [exactText, repeatingText] = text.split('_')
     if (repeatingText == null) {
         repeatingText = ''
@@ -77,7 +77,7 @@ const parse = (base: number, text: string): Result<Fraction, string> => {
 
     const combineParseResults = (results: Result<number, string>[]): Result<number[], string[]> => {
         let errors = results.filter(result => result.isErr())
-        if (errors.length > 1) {
+        if (errors.length > 0) {
             return Err(errors.map(unwrapErr))
         }
         return Ok(results.map(unwrap))
@@ -93,16 +93,16 @@ const parse = (base: number, text: string): Result<Fraction, string> => {
     return exactPart.cata({
         Ok: exact => repeatingPart.cata({
             Ok: repeating => Ok(create(base, List(exact), List(repeating))),
-            Err: id,
+            Err: Err,
         }),
-        Err: exactErrs => repeatingPart.cata({
+        Err: exactErrs => Err(repeatingPart.cata({
             Ok: _ => exactErrs,
             Err: repeatingErrs => [...exactErrs, ...repeatingErrs],
-        }),
+        })),
     })
 }
 
-const parseFactory = (base: number) => (text: string): Result<Fraction, string> => parse(base, text)
+const parseFactory = (base: number) => (text: string): Result<Fraction, string[]> => parse(base, text)
 
 const parseUnsafe = (base: number, text: string): Fraction => {
     let [exactText, repeatingText] = text.split('_')
